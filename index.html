@@ -1,0 +1,4721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>広報物作成支援ツール / PR Materials Production Tool</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-900);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-content h1 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .header-content p {
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.2);
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .lang-btn.active {
+      background: white;
+      color: var(--primary);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      background: white;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--gray-700);
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: var(--gray-200);
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .panel {
+      display: none;
+      background: white;
+      border-radius: 0 8px 8px 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section h2 {
+      font-size: 1.2rem;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .section h3 {
+      font-size: 1rem;
+      color: var(--gray-700);
+      margin: 16px 0 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--gray-700);
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: normal;
+    }
+
+    .checkbox-group input[type="checkbox"],
+    .checkbox-group input[type="radio"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Phase Card */
+    .phase-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: white;
+      cursor: pointer;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .phase-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 170px;
+      justify-content: flex-end;
+    }
+
+    .phase-header h3 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .phase-number {
+      background: var(--primary);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .phase-progress {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      min-width: 52px;
+      text-align: right;
+    }
+
+    .phase-content {
+      padding: 16px;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border: 1px solid var(--gray-200);
+    }
+
+    .workflow-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .workflow-table {
+      width: 100%;
+      min-width: 100%;
+      table-layout: auto;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .workflow-table th,
+    .workflow-table td {
+      border: 1px solid var(--gray-200);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .workflow-table th.actions,
+    .workflow-table td.actions {
+      width: 70px;
+      text-align: center;
+    }
+
+    .workflow-table .remove-row-btn {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+    }
+
+    .workflow-table th {
+      background: var(--gray-50);
+      color: var(--gray-700);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .workflow-table input[type="text"],
+    .workflow-table input[type="date"],
+    .workflow-table select,
+    .workflow-table textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .workflow-table textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .workflow-table .status-done {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .drag-handle {
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 28px;
+      border-radius: 4px;
+      color: var(--gray-400);
+      background: transparent;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .drag-handle:hover {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .workflow-row td:first-child {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .drag-placeholder {
+      outline: 2px dashed var(--primary);
+      background: #eff6ff;
+    }
+
+    .workflow-row.dragging {
+      opacity: 0.95;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: #fff !important;
+    }
+
+    .workflow-row.dragging .drag-handle {
+      cursor: grabbing;
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    /* 状態による行の色分け */
+    .workflow-row[data-status="todo"] {
+      background: #fff;
+    }
+    .workflow-row[data-status="doing"] {
+      background: #fffbeb;
+      border-left: 3px solid #f59e0b;
+    }
+    .workflow-row[data-status="review"] {
+      background: #eff6ff;
+      border-left: 3px solid #3b82f6;
+    }
+    .workflow-row[data-status="back"] {
+      background: #fef2f2;
+      border-left: 3px solid #ef4444;
+    }
+    .workflow-row[data-status="done"] {
+      background: #f0fdf4;
+      border-left: 3px solid #22c55e;
+    }
+
+    /* 期限超過警告 */
+    .workflow-row.overdue td:nth-child(4) {
+      color: #dc2626;
+      font-weight: bold;
+    }
+    .workflow-row.overdue td:nth-child(4) input {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+    .workflow-row.due-soon td:nth-child(4) {
+      color: #d97706;
+    }
+    .workflow-row.due-soon td:nth-child(4) input {
+      border-color: #d97706;
+      background: #fffbeb;
+    }
+
+    /* タスクガイダンスボタン */
+    .task-info-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 11px;
+      cursor: pointer;
+      margin-left: 6px;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .task-info-btn:hover {
+      background: var(--primary-light);
+    }
+
+    /* 依存関係警告 */
+    .dependency-warning {
+      color: #d97706;
+      font-size: 0.75rem;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* モーダル */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.hidden {
+      display: none;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      border-radius: 12px 12px 0 0;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-500);
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: var(--gray-900);
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-body h4 {
+      color: var(--primary);
+      margin: 16px 0 8px;
+      font-size: 0.95rem;
+    }
+    .modal-body h4:first-child {
+      margin-top: 0;
+    }
+    .modal-body ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .modal-body li {
+      margin-bottom: 4px;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--gray-200);
+      text-align: right;
+    }
+
+    /* フェーズ別進捗バー */
+    .phase-progress-summary {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: 8px;
+    }
+    .phase-progress-summary h3 {
+      margin: 0 0 12px 0;
+      font-size: 1rem;
+    }
+    .phase-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .phase-bar-item:last-child {
+      margin-bottom: 0;
+    }
+    .phase-name {
+      width: 120px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .phase-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .phase-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .phase-percent {
+      width: 40px;
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+
+    /* 担当者別作業量 */
+    .assignee-workload {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: 8px;
+    }
+    .assignee-workload h3 {
+      margin: 0 0 12px 0;
+      font-size: 1rem;
+    }
+    .workload-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .workload-table th,
+    .workload-table td {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+    }
+    .workload-table th {
+      background: white;
+      font-weight: 600;
+    }
+    .workload-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    /* 変更履歴 */
+    .change-log-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 0.85rem;
+    }
+    .change-log-item:last-child {
+      border-bottom: none;
+    }
+    .change-log-time {
+      color: var(--gray-500);
+      font-size: 0.8rem;
+    }
+    .change-log-task {
+      font-weight: 500;
+    }
+    .change-log-detail {
+      color: var(--gray-700);
+    }
+
+    .task-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .task-item.completed {
+      opacity: 0.6;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-text {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+
+    .task-meta input {
+      padding: 4px 8px;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      width: 120px;
+    }
+
+    /* Checklist */
+    .checklist {
+      background: var(--gray-50);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .checklist-item label {
+      cursor: pointer;
+    }
+
+    .checklist-item.checked label {
+      text-decoration: line-through;
+      color: var(--gray-500);
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: var(--gray-200);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: var(--gray-700);
+    }
+
+    /* Persona Card */
+    .persona-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .persona-card h4 {
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    /* Interview Section */
+    .interview-question {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .interview-question .question-number {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .interview-question textarea {
+      width: 100%;
+      min-height: 60px;
+      padding: 10px;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    .idea-palette {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+    }
+
+    .idea-category {
+      margin-bottom: 10px;
+    }
+
+    .idea-category-title {
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .idea-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .idea-chip {
+      background: white;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .idea-chip:hover {
+      background: var(--gray-100);
+      border-color: var(--gray-400);
+    }
+
+    .question-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .question-item {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .question-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--gray-700);
+      gap: 8px;
+    }
+
+    .question-item-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .question-item input[type="text"],
+    .question-item textarea {
+      width: 100%;
+      border: 1px solid var(--gray-300);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+
+    .question-item textarea {
+      margin-top: 8px;
+      min-height: 70px;
+    }
+
+    .question-item input[readonly] {
+      background: var(--gray-100);
+    }
+
+    .interviewee-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .interviewee-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .interviewee-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .interviewee-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .interview-type-hint {
+      background: var(--gray-50);
+      border: 1px dashed var(--gray-300);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .interview-steps {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    .interview-steps h4 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      color: var(--gray-700);
+    }
+
+    .interview-steps ol {
+      padding-left: 18px;
+      color: var(--gray-700);
+      font-size: 0.9rem;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-secondary {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-300);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .dashboard-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .dashboard-label {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-bottom: 6px;
+    }
+
+    .dashboard-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .dashboard-sub {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-top: 2px;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .dashboard-card.ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    .dashboard-card.ok .dashboard-value {
+      color: var(--success);
+    }
+
+    .dashboard-required-complete {
+      display: none;
+    }
+
+    .dashboard-card.ok .dashboard-required-remaining {
+      display: none;
+    }
+
+    .dashboard-card.ok .dashboard-required-complete {
+      display: inline;
+    }
+
+    .guide-reset {
+      background: transparent;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .guide-reset:hover {
+      background: var(--gray-100);
+    }
+
+    /* Quick Start */
+    .quick-start {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .quick-start-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--gray-900);
+    }
+
+    .quick-steps {
+      padding-left: 20px;
+      margin-bottom: 12px;
+      color: var(--gray-700);
+    }
+
+    .quick-step {
+      margin-bottom: 6px;
+    }
+
+    .quick-start-dismiss {
+      margin-top: 4px;
+    }
+
+    /* Required Summary */
+    .required-summary {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      color: var(--gray-700);
+      font-size: 0.9rem;
+    }
+
+    .required-summary-text {
+      display: inline;
+    }
+
+    .required-summary-complete {
+      display: none;
+    }
+
+    .required-summary.ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    .required-summary.ok .required-summary-text {
+      display: none;
+    }
+
+    .required-summary.ok .required-summary-complete {
+      display: inline;
+    }
+
+    /* Required Tags */
+    .required-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #fee2e2;
+      color: var(--danger);
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      margin-left: 6px;
+    }
+
+    .task-item .required-tag {
+      display: none;
+    }
+
+    .task-item.required .required-tag {
+      display: inline-flex;
+    }
+
+    .input-invalid {
+      border-color: var(--danger) !important;
+      background: #fef2f2;
+    }
+
+    /* Phase Status Badge */
+    .phase-status {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .phase-status.todo {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .phase-status.doing {
+      background: #fde68a;
+      color: #92400e;
+    }
+
+    .phase-status.done {
+      background: #bbf7d0;
+      color: #166534;
+    }
+
+    /* Agent Badge */
+    .agent-badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    /* Bilingual text */
+    .lang-ja, .lang-en {
+      display: none;
+    }
+
+    [data-lang="ja"] .lang-ja {
+      display: inline;
+    }
+
+    [data-lang="en"] .lang-en {
+      display: inline;
+    }
+
+    [data-lang="ja"] .lang-ja-block {
+      display: block;
+    }
+
+    [data-lang="en"] .lang-en-block {
+      display: block;
+    }
+
+    .lang-ja-block, .lang-en-block {
+      display: none;
+    }
+
+    /* Print Styles */
+    @media print {
+      .tabs, .btn-group, header, .lang-switcher, .quick-start, .dashboard {
+        display: none;
+      }
+      .panel {
+        display: block !important;
+        box-shadow: none;
+        page-break-after: always;
+      }
+      .phase-content {
+        display: block !important;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 12px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+      .tab {
+        white-space: nowrap;
+        padding: 10px 16px;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-lang="ja">
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>
+          <span class="lang-ja">広報物作成支援ツール</span>
+          <span class="lang-en">PR Materials Production Tool</span>
+        </h1>
+        <p>
+          <span class="lang-ja">工程管理・チェックリスト・取材シート</span>
+          <span class="lang-en">Workflow Management, Checklists & Interview Sheets</span>
+        </p>
+      </div>
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('ja', this)">日本語</button>
+        <button class="lang-btn" onclick="setLanguage('en', this)">English</button>
+      </div>
+    </header>
+
+    <div id="dashboard" class="dashboard">
+      <div class="dashboard-card">
+        <div class="dashboard-label">
+          <span class="lang-ja">進捗</span>
+          <span class="lang-en">Progress</span>
+        </div>
+        <div class="dashboard-value">
+          <span id="dashboardProgressPercent">0</span>%
+          <span class="lang-ja">完了</span>
+          <span class="lang-en">Complete</span>
+        </div>
+        <div class="dashboard-sub">
+          <span id="dashboardCompletedTasks">0</span>/<span id="dashboardTotalTasks">0</span>
+          <span class="lang-ja">タスク</span>
+          <span class="lang-en">tasks</span>
+        </div>
+      </div>
+      <div class="dashboard-card" id="dashboardRequiredCard">
+        <div class="dashboard-label">
+          <span class="lang-ja">必須入力</span>
+          <span class="lang-en">Required</span>
+        </div>
+        <div class="dashboard-value">
+          <span class="dashboard-required-remaining lang-ja">あと<span id="dashboardRequiredRemaining">0</span>項目</span>
+          <span class="dashboard-required-remaining lang-en"><span id="dashboardRequiredRemainingEn">0</span> remaining</span>
+          <span class="dashboard-required-complete lang-ja">完了済み</span>
+          <span class="dashboard-required-complete lang-en">Completed</span>
+        </div>
+      </div>
+      <div class="dashboard-card dashboard-actions">
+        <button class="guide-reset" onclick="showQuickStart()">
+          <span class="lang-ja">ガイド再表示</span>
+          <span class="lang-en">Show Guide</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="quickStart" class="quick-start" style="display:none">
+      <div class="quick-start-title">
+        <span class="lang-ja">クイックスタート</span>
+        <span class="lang-en">Quick Start</span>
+      </div>
+      <ol class="quick-steps">
+        <li class="quick-step">
+          <span class="lang-ja">基本情報を入力する</span>
+          <span class="lang-en">Fill in the basic information</span>
+        </li>
+        <li class="quick-step">
+          <span class="lang-ja">フェーズ1の必須タスクを完了する</span>
+          <span class="lang-en">Complete required tasks in Phase 1</span>
+        </li>
+        <li class="quick-step">
+          <span class="lang-ja">進捗を確認して出力する</span>
+          <span class="lang-en">Check progress and export</span>
+        </li>
+      </ol>
+      <button class="btn btn-primary quick-start-dismiss" onclick="dismissQuickStart()">
+        <span class="lang-ja">はじめる</span>
+        <span class="lang-en">Get Started</span>
+      </button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showPanel('project', this)">
+        <span class="lang-ja">プロジェクト情報</span>
+        <span class="lang-en">Project Info</span>
+      </button>
+      <button class="tab" onclick="showPanel('workflow', this)">
+        <span class="lang-ja">工程表</span>
+        <span class="lang-en">Workflow</span>
+      </button>
+      <button class="tab" onclick="showPanel('checklist', this)">
+        <span class="lang-ja">チェックリスト</span>
+        <span class="lang-en">Checklist</span>
+      </button>
+      <button class="tab" onclick="showPanel('interview', this)">
+        <span class="lang-ja">取材シート</span>
+        <span class="lang-en">Interview Sheet</span>
+      </button>
+      <button class="tab" onclick="showPanel('persona', this)">
+        <span class="lang-ja">ペルソナ</span>
+        <span class="lang-en">Persona</span>
+      </button>
+    </div>
+
+    <!-- プロジェクト情報パネル / Project Info Panel -->
+    <div id="project" class="panel active">
+      <div class="section">
+        <h2>
+          <span class="lang-ja">基本情報</span>
+          <span class="lang-en">Basic Information</span>
+        </h2>
+        <div class="required-summary" id="requiredSummary">
+          <span class="required-summary-text lang-ja">必須項目: あと<span id="requiredRemaining">0</span>項目</span>
+          <span class="required-summary-text lang-en">Required fields: <span id="requiredRemainingEn">0</span> remaining</span>
+          <span class="required-summary-complete lang-ja">必須項目: 完了済み</span>
+          <span class="required-summary-complete lang-en">Required fields: Completed</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">プロジェクト名</span>
+              <span class="lang-en">Project Name</span>
+              <span class="required-tag"><span class="lang-ja">必須</span><span class="lang-en">Required</span></span>
+            </label>
+            <input type="text" id="projectName" data-required="true" data-placeholder-ja="例：2025年度 入学案内パンフレット" data-placeholder-en="e.g., 2025 Admissions Brochure">
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">発行予定日</span>
+              <span class="lang-en">Publication Date</span>
+              <span class="required-tag"><span class="lang-ja">必須</span><span class="lang-en">Required</span></span>
+            </label>
+            <input type="date" id="publishDate" data-required="true">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">広報物の種類</span>
+            <span class="lang-en">Type of Material</span>
+          </label>
+          <div class="checkbox-group">
+            <label><input type="radio" name="prType" value="pamphlet">
+              <span class="lang-ja">パンフレット</span>
+              <span class="lang-en">Brochure</span>
+            </label>
+            <label><input type="radio" name="prType" value="web">
+              <span class="lang-ja">Webページ</span>
+              <span class="lang-en">Web Page</span>
+            </label>
+            <label><input type="radio" name="prType" value="flyer">
+              <span class="lang-ja">チラシ</span>
+              <span class="lang-en">Flyer</span>
+            </label>
+            <label><input type="radio" name="prType" value="other">
+              <span class="lang-ja">その他</span>
+              <span class="lang-en">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">目的</span>
+            <span class="lang-en">Purpose</span>
+            <span class="required-tag"><span class="lang-ja">必須</span><span class="lang-en">Required</span></span>
+          </label>
+          <textarea id="purpose" data-required="true" data-placeholder-ja="この広報物で達成したいこと" data-placeholder-en="What you want to achieve with this material"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">想定読者（ターゲット）</span>
+            <span class="lang-en">Target Audience</span>
+          </label>
+          <textarea id="targetAudience" data-placeholder-ja="例：進学先を検討中の高校2-3年生とその保護者" data-placeholder-en="e.g., High school juniors/seniors and their parents considering higher education"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">コアメッセージ（一言で伝えるなら）</span>
+            <span class="lang-en">Core Message (In One Sentence)</span>
+            <span class="required-tag"><span class="lang-ja">必須</span><span class="lang-en">Required</span></span>
+          </label>
+          <input type="text" id="coreMessage" data-required="true" data-placeholder-ja="この広報物で最も伝えたいこと" data-placeholder-en="The main message you want to convey">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">担当者</span>
+              <span class="lang-en">Person in Charge</span>
+            </label>
+            <input type="text" id="person">
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">最終承認者</span>
+              <span class="lang-en">Final Approver</span>
+            </label>
+            <input type="text" id="approver">
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData()">
+          <span class="lang-ja">保存</span>
+          <span class="lang-en">Save</span>
+        </button>
+        <button class="btn btn-secondary" onclick="exportData()">
+          <span class="lang-ja">エクスポート</span>
+          <span class="lang-en">Export</span>
+        </button>
+        <button class="btn btn-secondary" onclick="exportCsv()">
+          <span class="lang-ja">CSV</span>
+          <span class="lang-en">CSV</span>
+        </button>
+        <button class="btn btn-secondary" onclick="clearData()">
+          <span class="lang-ja">データ消去</span>
+          <span class="lang-en">Clear Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 工程表パネル / Workflow Panel -->
+    <div id="workflow" class="panel">
+      <div class="section">
+        <h2>
+          <span class="lang-ja">全体進捗</span>
+          <span class="lang-en">Overall Progress</span>
+        </h2>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="totalProgress" style="width: 0%"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressPercent">0</span>%
+            <span class="lang-ja">完了</span>
+            <span class="lang-en">Complete</span>
+            （<span id="completedTasks">0</span>/<span id="totalTasks">0</span>
+            <span class="lang-ja">タスク</span>
+            <span class="lang-en">tasks</span>）
+          </div>
+        </div>
+
+        <!-- フェーズ別進捗 -->
+        <div class="phase-progress-summary">
+          <h3>
+            <span class="lang-ja">フェーズ別進捗</span>
+            <span class="lang-en">Progress by Phase</span>
+          </h3>
+          <div id="phaseProgressBars"></div>
+        </div>
+
+        <!-- 担当者別作業量 -->
+        <div class="assignee-workload">
+          <h3>
+            <span class="lang-ja">担当者別作業量</span>
+            <span class="lang-en">Workload by Assignee</span>
+          </h3>
+          <table class="workload-table">
+            <thead>
+              <tr>
+                <th><span class="lang-ja">担当者</span><span class="lang-en">Assignee</span></th>
+                <th><span class="lang-ja">未着手</span><span class="lang-en">Todo</span></th>
+                <th><span class="lang-ja">進行中</span><span class="lang-en">Doing</span></th>
+                <th><span class="lang-ja">レビュー</span><span class="lang-en">Review</span></th>
+                <th><span class="lang-ja">完了</span><span class="lang-en">Done</span></th>
+                <th><span class="lang-ja">計</span><span class="lang-en">Total</span></th>
+              </tr>
+            </thead>
+            <tbody id="assigneeWorkloadBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section">
+        <h2>
+          <span class="lang-ja">工程表（テーブル）</span>
+          <span class="lang-en">Workflow Table</span>
+        </h2>
+        <div class="workflow-filters">
+          <input type="text" id="workflowAssigneeFilter" data-placeholder-ja="担当者で絞り込み" data-placeholder-en="Filter by assignee" oninput="applyWorkflowFilters()">
+          <select id="workflowStatusFilter" onchange="applyWorkflowFilters()">
+            <option value="">状態で絞り込み / Filter by status</option>
+            <option value="todo">未着手 / Not Started</option>
+            <option value="doing">進行中 / In Progress</option>
+            <option value="review">レビュー待ち / Review</option>
+            <option value="back">差し戻し / Back</option>
+            <option value="done">完了 / Done</option>
+          </select>
+          <button class="btn btn-secondary" type="button" onclick="addWorkflowRow()">
+            <span class="lang-ja">行を追加</span>
+            <span class="lang-en">Add Row</span>
+          </button>
+        </div>
+        <table class="workflow-table">
+          <thead>
+            <tr>
+              <th><span class="lang-ja">フェーズ</span><span class="lang-en">Phase</span></th>
+              <th><span class="lang-ja">タスク</span><span class="lang-en">Task</span></th>
+              <th><span class="lang-ja">担当者</span><span class="lang-en">Assignee</span></th>
+              <th><span class="lang-ja">期限</span><span class="lang-en">Due</span></th>
+              <th><span class="lang-ja">状態</span><span class="lang-en">Status</span></th>
+              <th><span class="lang-ja">備考</span><span class="lang-en">Notes</span></th>
+              <th class="actions"><span class="lang-ja">操作</span><span class="lang-en">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="workflowTableBody">
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>目的/ゴールの明確化</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>ターゲット/ペルソナ設定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>競合/類似物調査</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>コアメッセージ決定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>構成案/台割作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>スケジュール/予算確定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>企画・構成</td>
+              <td>企画承認</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>取材対象者リスト作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>取材質問設計</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>取材アポイント調整</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>取材実施/記録</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>文字起こし/記録整理</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>写真/素材撮影・収集</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>取材・素材</td>
+              <td>素材の不足確認/追加入手</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>初稿執筆</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>キャッチ/見出し案作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>内部レビュー（文章）</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>修正/第2稿作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>対象者/関係者確認</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>原稿作成</td>
+              <td>原稿確定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>デザインコンセプト決定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>ラフレイアウト作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>写真/図版選定・配置</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>初稿組版作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>内部レビュー（デザイン）</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>デザイン修正</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>編集・組版</td>
+              <td>デザイン確定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正1（初校）</td>
+              <td>初校チェック</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正1（初校）</td>
+              <td>初校赤字反映</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正2（再校）</td>
+              <td>再校チェック</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正2（再校）</td>
+              <td>再校赤字反映</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正3（三校）</td>
+              <td>三校チェック</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>校正3（三校）</td>
+              <td>三校赤字反映</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>色校正</td>
+              <td>色校正出し/確認</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>色校正</td>
+              <td>色校正戻し/確定</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>入稿データ作成</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>印刷発注/公開準備</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>校了/最終承認</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>納品/公開</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>配布/告知</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+            <tr class="workflow-row">
+              <td>入稿・公開</td>
+              <td>振り返り/ナレッジ整理</td>
+              <td><input type="text" class="workflow-assignee"></td>
+              <td><input type="date"></td>
+              <td>
+                <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
+                  <option value="todo">未着手</option>
+                  <option value="doing">進行中</option>
+                  <option value="review">レビュー待ち</option>
+                  <option value="back">差し戻し</option>
+                  <option value="done">完了</option>
+                </select>
+              </td>
+              <td><textarea></textarea></td>
+              <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)">削除</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <template id="workflowRowTemplate">
+          <tr class="workflow-row">
+            <td><input type="text" data-placeholder-ja="フェーズ" data-placeholder-en="Phase"></td>
+            <td><input type="text" data-placeholder-ja="タスク" data-placeholder-en="Task"></td>
+            <td><input type="text" class="workflow-assignee"></td>
+            <td><input type="date"></td>
+            <td>
+              <select class="workflow-status">
+                <option value="todo" data-text-ja="未着手">未着手</option>
+                <option value="doing" data-text-ja="進行中">進行中</option>
+                <option value="review" data-text-ja="レビュー待ち">レビュー待ち</option>
+                <option value="back" data-text-ja="差し戻し">差し戻し</option>
+                <option value="done" data-text-ja="完了">完了</option>
+              </select>
+            </td>
+            <td><textarea data-placeholder-ja="メモ、サブタスク等&#10;例: □ 写真選定 □ 文字校正" data-placeholder-en="Notes, subtasks&#10;e.g., □ Select photos □ Proofread"></textarea></td>
+            <td class="actions"><button class="btn btn-secondary remove-row-btn" type="button" onclick="removeWorkflowRow(this)" data-text-ja="削除">削除</button></td>
+          </tr>
+        </template>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData()">
+          <span class="lang-ja">保存</span>
+          <span class="lang-en">Save</span>
+        </button>
+        <button class="btn btn-secondary" onclick="showChangeLog()">
+          <span class="lang-ja">変更履歴</span>
+          <span class="lang-en">Change Log</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <span class="lang-ja">印刷</span>
+          <span class="lang-en">Print</span>
+        </button>
+        <button class="btn btn-secondary" onclick="clearData()">
+          <span class="lang-ja">データ消去</span>
+          <span class="lang-en">Clear Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ガイダンスモーダル / Guidance Modal -->
+    <div id="guidanceModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle"></h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="closeModal()">
+            <span class="lang-ja">閉じる</span>
+            <span class="lang-en">Close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- チェックリストパネル / Checklist Panel -->
+    <div id="checklist" class="panel">
+      <div class="section">
+        <h2>
+          <span class="lang-ja">企画段階チェック</span>
+          <span class="lang-en">Planning Stage Check</span>
+        </h2>
+        <div class="checklist">
+          <div class="checklist-item"><input type="checkbox" id="c1" onchange="toggleChecked(this)"><label for="c1"><span class="lang-ja">広報物の目的は明確か</span><span class="lang-en">Is the purpose clear?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c2" onchange="toggleChecked(this)"><label for="c2"><span class="lang-ja">ターゲット読者は具体的に設定されているか</span><span class="lang-en">Is the target audience specifically defined?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c3" onchange="toggleChecked(this)"><label for="c3"><span class="lang-ja">コアメッセージは一言で言えるか</span><span class="lang-en">Can the core message be stated in one sentence?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c4" onchange="toggleChecked(this)"><label for="c4"><span class="lang-ja">競合との差別化ポイントは明確か</span><span class="lang-en">Is differentiation from competitors clear?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c5" onchange="toggleChecked(this)"><label for="c5"><span class="lang-ja">予算・スケジュールは現実的か</span><span class="lang-en">Is the budget/schedule realistic?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c6" onchange="toggleChecked(this)"><label for="c6"><span class="lang-ja">関係者の合意は取れているか</span><span class="lang-en">Have stakeholders agreed?</span></label></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">取材・素材収集チェック</span>
+          <span class="lang-en">Interview & Content Collection Check</span>
+        </h2>
+        <div class="checklist">
+          <div class="checklist-item"><input type="checkbox" id="c7" onchange="toggleChecked(this)"><label for="c7"><span class="lang-ja">取材対象者は適切に選定されているか</span><span class="lang-en">Are interviewees appropriately selected?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c8" onchange="toggleChecked(this)"><label for="c8"><span class="lang-ja">取材許可・撮影許可は取得済みか</span><span class="lang-en">Are interview/photo permissions obtained?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c9" onchange="toggleChecked(this)"><label for="c9"><span class="lang-ja">質問は目的に沿った内容になっているか</span><span class="lang-en">Are questions aligned with objectives?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c10" onchange="toggleChecked(this)"><label for="c10"><span class="lang-ja">取材記録は正確に整理されているか</span><span class="lang-en">Are interview notes accurately organized?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c11" onchange="toggleChecked(this)"><label for="c11"><span class="lang-ja">必要な写真・図版は揃っているか</span><span class="lang-en">Are all needed photos/graphics ready?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c12" onchange="toggleChecked(this)"><label for="c12"><span class="lang-ja">引用・転載の許諾は確認済みか</span><span class="lang-en">Are citation/reprint permissions confirmed?</span></label></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">原稿チェック</span>
+          <span class="lang-en">Copy Check</span>
+        </h2>
+        <div class="checklist">
+          <div class="checklist-item"><input type="checkbox" id="c13" onchange="toggleChecked(this)"><label for="c13"><span class="lang-ja">コアメッセージが伝わる内容になっているか</span><span class="lang-en">Does the content convey the core message?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c14" onchange="toggleChecked(this)"><label for="c14"><span class="lang-ja">ターゲット読者に適した文体・語彙か</span><span class="lang-en">Is the style/vocabulary appropriate for the target?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c15" onchange="toggleChecked(this)"><label for="c15"><span class="lang-ja">見出し・キャッチコピーは目を引くか</span><span class="lang-en">Are headlines/taglines attention-grabbing?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c16" onchange="toggleChecked(this)"><label for="c16"><span class="lang-ja">読み進めたくなる構成になっているか</span><span class="lang-en">Is the structure engaging to read?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c17" onchange="toggleChecked(this)"><label for="c17"><span class="lang-ja">行動喚起（CTA）は明確か</span><span class="lang-en">Is the call-to-action clear?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c18" onchange="toggleChecked(this)"><label for="c18"><span class="lang-ja">文字数は適切か</span><span class="lang-en">Is the word count appropriate?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c19" onchange="toggleChecked(this)"><label for="c19"><span class="lang-ja">取材対象者の確認は完了しているか</span><span class="lang-en">Has interviewee approval been completed?</span></label></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">デザイン・レイアウトチェック</span>
+          <span class="lang-en">Design & Layout Check</span>
+        </h2>
+        <div class="checklist">
+          <div class="checklist-item"><input type="checkbox" id="c20" onchange="toggleChecked(this)"><label for="c20"><span class="lang-ja">視線誘導は適切か（重要情報が目に入るか）</span><span class="lang-en">Is visual hierarchy effective?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c21" onchange="toggleChecked(this)"><label for="c21"><span class="lang-ja">情報の優先順位が視覚的に表現されているか</span><span class="lang-en">Is information priority visually expressed?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c22" onchange="toggleChecked(this)"><label for="c22"><span class="lang-ja">写真・図版はメッセージを強化しているか</span><span class="lang-en">Do images reinforce the message?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c23" onchange="toggleChecked(this)"><label for="c23"><span class="lang-ja">余白は適切か（詰め込みすぎていないか）</span><span class="lang-en">Is whitespace adequate?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c24" onchange="toggleChecked(this)"><label for="c24"><span class="lang-ja">文字サイズ・フォントは読みやすいか</span><span class="lang-en">Is text size/font readable?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c25" onchange="toggleChecked(this)"><label for="c25"><span class="lang-ja">色使いはブランドイメージに合っているか</span><span class="lang-en">Do colors match brand image?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c26" onchange="toggleChecked(this)"><label for="c26"><span class="lang-ja">印刷/画面で見たときの印象は想定通りか</span><span class="lang-en">Does it look right in print/on screen?</span></label></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">最終確認チェック</span>
+          <span class="lang-en">Final Check</span>
+        </h2>
+        <div class="checklist">
+          <div class="checklist-item"><input type="checkbox" id="c27" onchange="toggleChecked(this)"><label for="c27"><span class="lang-ja">誤字脱字はないか</span><span class="lang-en">No typos or missing text?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c28" onchange="toggleChecked(this)"><label for="c28"><span class="lang-ja">数字・日付・固有名詞は正確か</span><span class="lang-en">Are numbers/dates/names accurate?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c29" onchange="toggleChecked(this)"><label for="c29"><span class="lang-ja">表記は統一されているか</span><span class="lang-en">Is terminology consistent?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c30" onchange="toggleChecked(this)"><label for="c30"><span class="lang-ja">連絡先・URLは正しいか</span><span class="lang-en">Are contact info/URLs correct?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c31" onchange="toggleChecked(this)"><label for="c31"><span class="lang-ja">著作権・肖像権の問題はないか</span><span class="lang-en">Any copyright/likeness issues?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c32" onchange="toggleChecked(this)"><label for="c32"><span class="lang-ja">誤解を招く表現はないか</span><span class="lang-en">Any misleading expressions?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c33" onchange="toggleChecked(this)"><label for="c33"><span class="lang-ja">他校・競合への配慮は十分か</span><span class="lang-en">Sufficient consideration for competitors?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c34" onchange="toggleChecked(this)"><label for="c34"><span class="lang-ja">関係部署の承認は得られているか</span><span class="lang-en">Have departments approved?</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="c35" onchange="toggleChecked(this)"><label for="c35"><span class="lang-ja">最終承認者の承認は得られているか</span><span class="lang-en">Has final approver signed off?</span></label></div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData()">
+          <span class="lang-ja">保存</span>
+          <span class="lang-en">Save</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <span class="lang-ja">印刷</span>
+          <span class="lang-en">Print</span>
+        </button>
+        <button class="btn btn-secondary" onclick="clearData()">
+          <span class="lang-ja">データ消去</span>
+          <span class="lang-en">Clear Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 取材シートパネル / Interview Sheet Panel -->
+    <div id="interview" class="panel">
+      <div class="section">
+        <h2>
+          <span class="lang-ja">取材基本情報</span>
+          <span class="lang-en">Interview Basic Information</span>
+        </h2>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">取材タイプ</span>
+            <span class="lang-en">Interview Type</span>
+          </label>
+          <div class="checkbox-group">
+            <label>
+              <input type="radio" name="interviewType" value="direct" checked onchange="setInterviewType('direct')">
+              <span class="lang-ja">直接取材</span>
+              <span class="lang-en">Direct Interview</span>
+            </label>
+            <label>
+              <input type="radio" name="interviewType" value="request" onchange="setInterviewType('request')">
+              <span class="lang-ja">原稿作成依頼</span>
+              <span class="lang-en">Writing Request</span>
+            </label>
+          </div>
+          <div class="interview-type-hint" id="interviewTypeHint">
+            <span class="lang-ja">直接話を聞く前提の質問とフォローを記録します。</span>
+            <span class="lang-en">Use this for live interviews with follow-up questions.</span>
+          </div>
+          <div class="interview-steps" id="interviewStepsDirect" data-interview-type="direct">
+            <h4>
+              <span class="lang-ja">必要な対応ステップ（直接取材）</span>
+              <span class="lang-en">Required Steps (Direct Interview)</span>
+            </h4>
+            <ol>
+              <li><span class="lang-ja">日程調整・許諾取得</span><span class="lang-en">Schedule and obtain consent</span></li>
+              <li><span class="lang-ja">質問設計・事前共有</span><span class="lang-en">Design questions and share in advance</span></li>
+              <li><span class="lang-ja">取材実施・記録</span><span class="lang-en">Conduct interview and record notes</span></li>
+              <li><span class="lang-ja">確認依頼・内容反映</span><span class="lang-en">Request review and incorporate feedback</span></li>
+            </ol>
+          </div>
+          <div class="interview-steps" id="interviewStepsRequest" data-interview-type="request" style="display:none">
+            <h4>
+              <span class="lang-ja">必要な対応ステップ（原稿作成依頼）</span>
+              <span class="lang-en">Required Steps (Writing Request)</span>
+            </h4>
+            <ol>
+              <li><span class="lang-ja">依頼内容・締切の提示</span><span class="lang-en">Share request details and deadline</span></li>
+              <li><span class="lang-ja">フォーマット/分量の指定</span><span class="lang-en">Provide format and length guidance</span></li>
+              <li><span class="lang-ja">回収・不足確認</span><span class="lang-en">Collect responses and check gaps</span></li>
+              <li><span class="lang-ja">加筆依頼・最終確認</span><span class="lang-en">Request additions and finalize</span></li>
+            </ol>
+          </div>
+        </div>
+        <div data-interview-type="direct">
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">取材日</span>
+                <span class="lang-en">Interview Date</span>
+              </label>
+              <input type="date" id="interviewDate">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">取材場所</span>
+                <span class="lang-en">Location</span>
+              </label>
+              <input type="text" id="interviewPlace" data-placeholder-ja="例：○○キャンパス 会議室A" data-placeholder-en="e.g., Main Campus, Meeting Room A">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">取材者</span>
+                <span class="lang-en">Interviewer</span>
+              </label>
+              <input type="text" id="interviewer">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">記録者</span>
+                <span class="lang-en">Note Taker</span>
+              </label>
+              <input type="text" id="recorder">
+            </div>
+          </div>
+        </div>
+        <div data-interview-type="request" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">依頼日</span>
+                <span class="lang-en">Request Date</span>
+              </label>
+              <input type="date" id="requestDate">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">提出締切</span>
+                <span class="lang-en">Submission Deadline</span>
+              </label>
+              <input type="date" id="requestDeadline">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">依頼方法</span>
+                <span class="lang-en">Request Method</span>
+              </label>
+              <input type="text" id="requestMethod" data-placeholder-ja="例：メール/フォーム" data-placeholder-en="e.g., Email/Form">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">窓口/担当</span>
+                <span class="lang-en">Contact Person</span>
+              </label>
+              <input type="text" id="requestContact" data-placeholder-ja="例：広報担当" data-placeholder-en="e.g., PR 담당">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">取材対象者情報</span>
+          <span class="lang-en">Interviewee Information</span>
+        </h2>
+        <div class="interviewee-controls">
+          <button class="btn btn-secondary" type="button" onclick="addInterviewee()">
+            <span class="lang-ja">対象者を追加</span>
+            <span class="lang-en">Add Interviewee</span>
+          </button>
+        </div>
+        <div id="intervieweeList" class="interviewee-list"></div>
+        <template id="intervieweeTemplate">
+          <div class="interviewee-card">
+            <div class="interviewee-header">
+              <div>
+                <span class="lang-ja">対象者</span>
+                <span class="lang-en">Interviewee</span>
+                <span class="interviewee-index">1</span>
+              </div>
+              <button class="btn btn-secondary" type="button" onclick="removeInterviewee(this)">
+                <span class="lang-ja">削除</span>
+                <span class="lang-en">Remove</span>
+              </button>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <span class="lang-ja">氏名</span>
+                  <span class="lang-en">Name</span>
+                </label>
+                <input type="text" data-placeholder-ja="例：田中 太郎" data-placeholder-en="e.g., Taro Tanaka">
+              </div>
+              <div class="form-group">
+                <label>
+                  <span class="lang-ja">所属</span>
+                  <span class="lang-en">Department/Affiliation</span>
+                </label>
+                <input type="text" data-placeholder-ja="例：○○学部" data-placeholder-en="e.g., Faculty of ...">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <span class="lang-ja">役職/学年</span>
+                  <span class="lang-en">Title/Year</span>
+                </label>
+                <input type="text" data-placeholder-ja="例：教授 / 3年" data-placeholder-en="e.g., Professor / 3rd year">
+              </div>
+              <div class="form-group">
+                <label>
+                  <span class="lang-ja">連絡先</span>
+                  <span class="lang-en">Contact</span>
+                </label>
+                <input type="text" data-placeholder-ja="例：メール/電話" data-placeholder-en="e.g., Email/Phone">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">備考</span>
+                <span class="lang-en">Notes</span>
+              </label>
+              <textarea data-placeholder-ja="補足メモ" data-placeholder-en="Additional notes"></textarea>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">事前確認</span>
+          <span class="lang-en">Pre-Interview Confirmation</span>
+        </h2>
+        <div class="checklist" data-interview-type="direct">
+          <div class="checklist-item"><input type="checkbox" id="ip1" onchange="toggleChecked(this)"><label for="ip1"><span class="lang-ja">取材許可を得ている</span><span class="lang-en">Interview permission obtained</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip2" onchange="toggleChecked(this)"><label for="ip2"><span class="lang-ja">撮影許可を得ている</span><span class="lang-en">Photo permission obtained</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip3" onchange="toggleChecked(this)"><label for="ip3"><span class="lang-ja">掲載前の原稿確認について説明済み</span><span class="lang-en">Explained pre-publication review process</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip4" onchange="toggleChecked(this)"><label for="ip4"><span class="lang-ja">録音許可を得ている（録音する場合）</span><span class="lang-en">Recording permission obtained (if applicable)</span></label></div>
+        </div>
+        <div class="checklist" data-interview-type="request" style="display:none">
+          <div class="checklist-item"><input type="checkbox" id="ip5" onchange="toggleChecked(this)"><label for="ip5"><span class="lang-ja">依頼文の合意が取れている</span><span class="lang-en">Request brief agreed</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip6" onchange="toggleChecked(this)"><label for="ip6"><span class="lang-ja">締切と提出方法が共有済み</span><span class="lang-en">Deadline and submission method shared</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip7" onchange="toggleChecked(this)"><label for="ip7"><span class="lang-ja">フォーマット・分量が明確</span><span class="lang-en">Format and length clarified</span></label></div>
+          <div class="checklist-item"><input type="checkbox" id="ip8" onchange="toggleChecked(this)"><label for="ip8"><span class="lang-ja">事実確認の必要項目が共有済み</span><span class="lang-en">Facts to verify shared</span></label></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">取材の目的</span>
+          <span class="lang-en">Interview Purpose</span>
+        </h2>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">掲載予定の広報物</span>
+            <span class="lang-en">Intended Publication</span>
+          </label>
+          <input type="text" id="interviewPurpose" data-placeholder-ja="例：2025年度入学案内パンフレット" data-placeholder-en="e.g., 2025 Admissions Brochure">
+        </div>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">この取材で引き出したいこと</span>
+            <span class="lang-en">What to Capture in This Interview</span>
+          </label>
+          <textarea id="interviewGoal" data-placeholder-ja="例：入学後の成長エピソード、学びの具体例" data-placeholder-en="e.g., Growth stories, specific learning experiences"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">質問リスト</span>
+          <span class="lang-en">Question List</span>
+        </h2>
+        <div class="agent-badge">
+          <span class="lang-ja">活用エージェント</span>
+          <span class="lang-en">Suggested Agent</span>: pr-interviewer
+        </div>
+
+        <div class="interview-type-hint" style="margin-top:12px;">
+          <span class="lang-ja">取材/原稿依頼の目的から「引き出すべき情報」を整理し、質問や依頼文を具体化します。</span>
+          <span class="lang-en">Clarify what you need to extract, then shape questions or request instructions.</span>
+        </div>
+
+        <div data-interview-type="direct">
+          <h3>
+            <span class="lang-ja">取材設計（目的→質問）</span>
+            <span class="lang-en">Interview Design (Goal → Questions)</span>
+          </h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">引き出したいキーメッセージ</span>
+                <span class="lang-en">Key Message to Extract</span>
+              </label>
+              <textarea data-placeholder-ja="例：入学後の成長、挑戦の背景" data-placeholder-en="e.g., Growth after enrollment, background of challenges"></textarea>
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">証拠・具体例が必要なポイント</span>
+                <span class="lang-en">Points Needing Evidence/Examples</span>
+              </label>
+              <textarea data-placeholder-ja="例：成果の数字、具体エピソード" data-placeholder-en="e.g., Outcomes, concrete episodes"></textarea>
+            </div>
+          </div>
+
+          <h3>
+            <span class="lang-ja">質問テンプレート（編集して使う）</span>
+            <span class="lang-en">Question Templates (Edit to Use)</span>
+          </h3>
+          <div class="idea-palette">
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">背景・動機</span>
+                <span class="lang-en">Background & Motivation</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','背景やきっかけを教えてください')">背景やきっかけ</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','当時どんな課題がありましたか？')">当時の課題</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','なぜその選択をしたのですか？')">意思決定理由</button>
+              </div>
+            </div>
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">具体例・成果</span>
+                <span class="lang-en">Examples & Outcomes</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','印象的なエピソードを教えてください')">印象的なエピソード</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','成果や変化を数字で表すと？')">成果の数字</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','特に工夫した点は？')">工夫した点</button>
+              </div>
+            </div>
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">価値・メッセージ</span>
+                <span class="lang-en">Value & Message</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','この取り組みの価値は何ですか？')">価値</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','読者に伝えたい一言は？')">一言メッセージ</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('direct','今後の展望は？')">今後の展望</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-list" id="directQuestionList"></div>
+          <button class="btn btn-secondary" type="button" onclick="addQuestionItem('direct','')">
+            <span class="lang-ja">質問を追加</span>
+            <span class="lang-en">Add Question</span>
+          </button>
+
+          <h3>
+            <span class="lang-ja">締めくくり</span>
+            <span class="lang-en">Closing</span>
+          </h3>
+          <div class="question-item" id="closingQuestionItem">
+            <div class="question-item-header">
+              <div class="question-item-title">
+                <span class="question-badge" id="closingQuestionNumber">Q1</span>
+                <span class="lang-ja">締めくくり</span>
+                <span class="lang-en">Closing</span>
+              </div>
+            </div>
+            <input type="text" id="closingQuestion" readonly>
+            <textarea data-placeholder-ja="回答メモ" data-placeholder-en="Notes"></textarea>
+          </div>
+        </div>
+
+        <div data-interview-type="request" style="display:none">
+          <h3>
+            <span class="lang-ja">依頼設計（目的→指示）</span>
+            <span class="lang-en">Request Design (Goal → Instructions)</span>
+          </h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">依頼で欲しい要点</span>
+                <span class="lang-en">Key Points to Request</span>
+              </label>
+              <textarea data-placeholder-ja="例：背景/具体例/成果" data-placeholder-en="e.g., background/examples/outcomes"></textarea>
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">NG・避けたい表現</span>
+                <span class="lang-en">Do-Not-Include</span>
+              </label>
+              <textarea data-placeholder-ja="例：未確定情報、個人情報" data-placeholder-en="e.g., unconfirmed info, personal data"></textarea>
+            </div>
+          </div>
+
+          <h3>
+            <span class="lang-ja">原稿依頼テンプレート（編集して使う）</span>
+            <span class="lang-en">Writing Request Template (Edit to Use)</span>
+          </h3>
+          <div class="idea-palette">
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">依頼の軸</span>
+                <span class="lang-en">Request Focus</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','テーマ（例：研究活動での挑戦）')">テーマ</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','読者に伝えたい一言')">一言メッセージ</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','取り上げたいポイント（3つ）')">ポイント3つ</button>
+              </div>
+            </div>
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">具体性</span>
+                <span class="lang-en">Specifics</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','具体例（数字・成果）')">数字・成果</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','背景や経緯')">背景・経緯</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','苦労と工夫')">苦労と工夫</button>
+              </div>
+            </div>
+            <div class="idea-category">
+              <div class="idea-category-title">
+                <span class="lang-ja">トーン・制約</span>
+                <span class="lang-en">Tone & Constraints</span>
+              </div>
+              <div class="idea-chips">
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','文体/トーンの希望')">文体/トーン</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','避けたい表現')">避けたい表現</button>
+                <button class="idea-chip" type="button" onclick="addQuestionItem('request','文字数/分量')">文字数/分量</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="question-list" id="requestQuestionList"></div>
+          <button class="btn btn-secondary" type="button" onclick="addQuestionItem('request','')">
+            <span class="lang-ja">依頼項目を追加</span>
+            <span class="lang-en">Add Request Item</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>
+          <span class="lang-ja">取材後の整理</span>
+          <span class="lang-en">Post-Interview Organization</span>
+        </h2>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">使えそうな引用（そのまま使えるフレーズ）</span>
+            <span class="lang-en">Usable Quotes (Direct phrases)</span>
+          </label>
+          <textarea id="quotes" rows="6" data-placeholder-ja="「〜〜〜」（文脈：〜の話の流れで）" data-placeholder-en='"..." (Context: During discussion about...)'></textarea>
+        </div>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">印象的なエピソード</span>
+            <span class="lang-en">Memorable Episodes</span>
+          </label>
+          <textarea id="episodes" rows="6" data-placeholder-ja="状況：
+行動：
+結果：" data-placeholder-en="Situation:
+Action:
+Result:"></textarea>
+        </div>
+        <div class="form-group">
+          <label>
+            <span class="lang-ja">確認が必要な事項 / 追加取材の提案</span>
+            <span class="lang-en">Items to Verify / Suggested Follow-ups</span>
+          </label>
+          <textarea id="followup" rows="4" data-placeholder-ja="事実確認が必要な点、追加で聞きたいこと" data-placeholder-en="Facts to verify, additional questions to ask"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData()">
+          <span class="lang-ja">保存</span>
+          <span class="lang-en">Save</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <span class="lang-ja">印刷</span>
+          <span class="lang-en">Print</span>
+        </button>
+        <button class="btn btn-secondary" onclick="clearData()">
+          <span class="lang-ja">データ消去</span>
+          <span class="lang-en">Clear Data</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ペルソナパネル / Persona Panel -->
+    <div id="persona" class="panel">
+      <div class="section">
+        <h2>
+          <span class="lang-ja">読者ペルソナ設定</span>
+          <span class="lang-en">Reader Persona Definition</span>
+        </h2>
+        <p style="color: var(--gray-500); margin-bottom: 16px;">
+          <span class="lang-ja">この広報物の想定読者像を具体的に設定します。</span>
+          <span class="lang-en">Define specific reader profiles for this material.</span>
+        </p>
+
+        <div class="persona-card">
+          <h4>
+            <span class="lang-ja">ペルソナ 1（メインターゲット）</span>
+            <span class="lang-en">Persona 1 (Primary Target)</span>
+          </h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">名前（仮）</span>
+                <span class="lang-en">Name (Fictional)</span>
+              </label>
+              <input type="text" data-placeholder-ja="例：田中 太郎" data-placeholder-en="e.g., Taro Tanaka">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">属性</span>
+                <span class="lang-en">Profile</span>
+              </label>
+              <input type="text" data-placeholder-ja="例：高校2年生、理系志望" data-placeholder-en="e.g., High school junior, STEM-focused">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">関心事</span>
+              <span class="lang-en">Interests</span>
+            </label>
+            <textarea data-placeholder-ja="例：将来の進路、学生生活、就職実績" data-placeholder-en="e.g., Future career, campus life, job placement rates"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">不安・懸念</span>
+              <span class="lang-en">Concerns</span>
+            </label>
+            <textarea data-placeholder-ja="例：自分に合うかわからない、学費が心配" data-placeholder-en="e.g., Not sure if it's the right fit, worried about tuition"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">情報収集方法</span>
+              <span class="lang-en">How They Research</span>
+            </label>
+            <textarea data-placeholder-ja="例：学校公式サイト、Instagram、オープンキャンパス" data-placeholder-en="e.g., Official website, Instagram, campus visits"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">この広報物で伝えたいこと</span>
+              <span class="lang-en">Key Message for This Persona</span>
+            </label>
+            <textarea data-placeholder-ja="この読者に最も伝えたいメッセージ" data-placeholder-en="The main message for this reader"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">期待する行動</span>
+              <span class="lang-en">Desired Action</span>
+            </label>
+            <textarea data-placeholder-ja="例：オープンキャンパスに参加する、資料請求する" data-placeholder-en="e.g., Attend open campus, request brochure"></textarea>
+          </div>
+        </div>
+
+        <div class="persona-card">
+          <h4>
+            <span class="lang-ja">ペルソナ 2（サブターゲット）</span>
+            <span class="lang-en">Persona 2 (Secondary Target)</span>
+          </h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">名前（仮）</span>
+                <span class="lang-en">Name (Fictional)</span>
+              </label>
+              <input type="text" data-placeholder-ja="例：鈴木 花子" data-placeholder-en="e.g., Hanako Suzuki">
+            </div>
+            <div class="form-group">
+              <label>
+                <span class="lang-ja">属性</span>
+                <span class="lang-en">Profile</span>
+              </label>
+              <input type="text" data-placeholder-ja="例：高校生の母親、40代" data-placeholder-en="e.g., Parent of high schooler, 40s">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">関心事</span>
+              <span class="lang-en">Interests</span>
+            </label>
+            <textarea data-placeholder-ja="例：学費、就職実績、キャンパスの安全性" data-placeholder-en="e.g., Tuition, career outcomes, campus safety"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">不安・懸念</span>
+              <span class="lang-en">Concerns</span>
+            </label>
+            <textarea data-placeholder-ja="例：費用対効果、子どもに合った環境か" data-placeholder-en="e.g., Value for money, right environment for my child"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">情報収集方法</span>
+              <span class="lang-en">How They Research</span>
+            </label>
+            <textarea data-placeholder-ja="例：学校公式サイト、口コミ、説明会" data-placeholder-en="e.g., Official site, word-of-mouth, info sessions"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">この広報物で伝えたいこと</span>
+              <span class="lang-en">Key Message for This Persona</span>
+            </label>
+            <textarea data-placeholder-ja="この読者に最も伝えたいメッセージ" data-placeholder-en="The main message for this reader"></textarea>
+          </div>
+          <div class="form-group">
+            <label>
+              <span class="lang-ja">期待する行動</span>
+              <span class="lang-en">Desired Action</span>
+            </label>
+            <textarea data-placeholder-ja="例：子どもにパンフレットを見せる、一緒にオープンキャンパスに行く" data-placeholder-en="e.g., Share brochure with child, attend open campus together"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData()">
+          <span class="lang-ja">保存</span>
+          <span class="lang-en">Save</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <span class="lang-ja">印刷</span>
+          <span class="lang-en">Print</span>
+        </button>
+        <button class="btn btn-secondary" onclick="clearData()">
+          <span class="lang-ja">データ消去</span>
+          <span class="lang-en">Clear Data</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 言語切り替え
+    function setLanguage(lang, btn) {
+      document.body.setAttribute('data-lang', lang);
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      if (btn) {
+        btn.classList.add('active');
+      }
+
+      // プレースホルダーの更新
+      updatePlaceholders(lang);
+
+      // 締めくくり質問の更新
+      const closingQ = document.getElementById('closingQuestion');
+      if (closingQ) {
+        closingQ.value = lang === 'ja'
+          ? '他に伝えておきたいことはありますか？'
+          : 'Is there anything else you would like to share?';
+      }
+
+      // 工程表テーブルの言語更新
+      updateWorkflowTableLanguage(lang);
+
+      // 依存関係の警告も言語に合わせて更新
+      checkDependencies();
+
+      // 言語設定を保存
+      localStorage.setItem('prWorkflowLang', lang);
+    }
+
+    // 工程表テーブルの翻訳マッピング
+    const workflowTranslations = {
+      phases: {
+        '企画・構成': 'Planning',
+        '取材・素材': 'Research & Materials',
+        '原稿作成': 'Writing',
+        '編集・組版': 'Design & Layout',
+        '校正1（初校）': 'Proofreading 1',
+        '校正2（再校）': 'Proofreading 2',
+        '校正3（三校）': 'Proofreading 3',
+        '色校正': 'Color Proof',
+        '入稿・公開': 'Submission & Publication'
+      },
+      tasks: {
+        '目的/ゴールの明確化': 'Define purpose/goals',
+        'ターゲット/ペルソナ設定': 'Set target/persona',
+        '競合/類似物調査': 'Competitor research',
+        'コアメッセージ決定': 'Define core message',
+        '構成案/台割作成': 'Create outline/structure',
+        'スケジュール/予算確定': 'Finalize schedule/budget',
+        '企画承認': 'Approve plan',
+        '取材対象者リスト作成': 'Create interviewee list',
+        '取材質問設計': 'Design interview questions',
+        '取材アポイント調整': 'Schedule interviews',
+        '取材実施/記録': 'Conduct interviews',
+        '文字起こし/記録整理': 'Transcription/organize notes',
+        '写真/素材撮影・収集': 'Photo/material collection',
+        '素材の不足確認/追加入手': 'Check/obtain missing materials',
+        '初稿執筆': 'Write first draft',
+        'キャッチ/見出し案作成': 'Create headlines/copy',
+        '内部レビュー（文章）': 'Internal review (text)',
+        '修正/第2稿作成': 'Revisions/second draft',
+        '対象者/関係者確認': 'Subject/stakeholder review',
+        '原稿確定': 'Finalize manuscript',
+        'デザインコンセプト決定': 'Define design concept',
+        'ラフレイアウト作成': 'Create rough layout',
+        '写真/図版選定・配置': 'Select/place photos',
+        '初稿組版作成': 'First typeset draft',
+        '内部レビュー（デザイン）': 'Internal review (design)',
+        'デザイン修正': 'Design revisions',
+        'デザイン確定': 'Finalize design',
+        '初校チェック': 'First proof check',
+        '初校赤字反映': 'Apply first corrections',
+        '再校チェック': 'Second proof check',
+        '再校赤字反映': 'Apply second corrections',
+        '三校チェック': 'Third proof check',
+        '三校赤字反映': 'Apply third corrections',
+        '色校正出し/確認': 'Color proof check',
+        '色校正戻し/確定': 'Finalize color proof',
+        '入稿データ作成': 'Prepare submission data',
+        '印刷発注/公開準備': 'Print order/publish prep',
+        '校了/最終承認': 'Final approval',
+        '納品/公開': 'Delivery/publication',
+        '配布/告知': 'Distribution/announcement'
+      },
+      statuses: {
+        '未着手': 'Not Started',
+        '進行中': 'In Progress',
+        'レビュー待ち': 'In Review',
+        '差し戻し': 'Returned',
+        '完了': 'Done'
+      },
+      buttons: {
+        '削除': 'Delete'
+      }
+    };
+
+    // 工程表テーブルの言語更新
+    function updateWorkflowTableLanguage(lang) {
+      const rows = document.querySelectorAll('.workflow-row');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) {
+          // フェーズ名（1列目）
+          const phaseCell = cells[0];
+          const phaseText = phaseCell.dataset.textJa || phaseCell.textContent.trim();
+          if (!phaseCell.dataset.textJa) {
+            phaseCell.dataset.textJa = phaseText;
+          }
+          // ドラッグハンドル以外のテキストノードを更新
+          const textNodes = [...phaseCell.childNodes].filter(n => n.nodeType === Node.TEXT_NODE);
+          if (textNodes.length > 0) {
+            const enText = workflowTranslations.phases[phaseCell.dataset.textJa] || phaseCell.dataset.textJa;
+            textNodes[0].textContent = lang === 'ja' ? phaseCell.dataset.textJa : enText;
+          }
+
+          // タスク名（2列目） — ガイダンスボタン(?)と警告spanを保持したまま更新
+          const taskCell = cells[1];
+          // 初回は日本語テキストを保存（ボタン・警告を除いたテキストのみ）
+          if (!taskCell.dataset.textJa) {
+            const clone = taskCell.cloneNode(true);
+            const rmEls = clone.querySelectorAll('.task-info-btn, .dependency-warning');
+            rmEls.forEach(el => el.remove());
+            taskCell.dataset.textJa = clone.textContent.trim();
+          }
+          const enTask = workflowTranslations.tasks[taskCell.dataset.textJa] || taskCell.dataset.textJa;
+          const newText = lang === 'ja' ? taskCell.dataset.textJa : enTask;
+          // 子要素（ボタン・警告）を退避→テキスト更新→子要素を再追加
+          const preservedEls = taskCell.querySelectorAll('.task-info-btn, .dependency-warning');
+          const savedEls = [...preservedEls];
+          taskCell.textContent = newText;
+          savedEls.forEach(el => taskCell.appendChild(el));
+        }
+
+        // ステータス選択肢
+        const statusSelect = row.querySelector('.workflow-status');
+        if (statusSelect) {
+          statusSelect.querySelectorAll('option').forEach(opt => {
+            const jaText = opt.dataset.textJa || opt.textContent.trim();
+            if (!opt.dataset.textJa) {
+              opt.dataset.textJa = jaText;
+            }
+            const enText = workflowTranslations.statuses[opt.dataset.textJa] || opt.dataset.textJa;
+            opt.textContent = lang === 'ja' ? opt.dataset.textJa : enText;
+          });
+        }
+
+        // 削除ボタン
+        const deleteBtn = row.querySelector('.remove-row-btn');
+        if (deleteBtn) {
+          const jaText = deleteBtn.dataset.textJa || deleteBtn.textContent.trim();
+          if (!deleteBtn.dataset.textJa) {
+            deleteBtn.dataset.textJa = jaText;
+          }
+          deleteBtn.textContent = lang === 'ja' ? jaText : workflowTranslations.buttons[jaText] || jaText;
+        }
+      });
+    }
+
+    // プレースホルダーの更新
+    function updatePlaceholders(lang) {
+      document.querySelectorAll('[data-placeholder-ja]').forEach(el => {
+        const placeholder = lang === 'ja' ? el.dataset.placeholderJa : el.dataset.placeholderEn;
+        if (placeholder) {
+          el.placeholder = placeholder;
+        }
+      });
+    }
+
+    // タブ切り替え
+    function showPanel(panelId, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(panelId).classList.add('active');
+      if (btn) {
+        btn.classList.add('active');
+      }
+    }
+
+    // フェーズの開閉
+    function togglePhase(phaseNum) {
+      const content = document.getElementById(`phase${phaseNum}Content`);
+      content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function setAllPhases(open) {
+      for (let i = 1; i <= 6; i++) {
+        const content = document.getElementById(`phase${i}Content`);
+        if (content) {
+          content.style.display = open ? 'block' : 'none';
+        }
+      }
+    }
+
+    function toggleWorkflowCompact() {
+      const lists = document.querySelectorAll('.task-list');
+      const isCompact = lists.length > 0 && lists[0].classList.contains('compact');
+      lists.forEach(list => list.classList.toggle('compact', !isCompact));
+      const btn = document.getElementById('workflowCompactBtn');
+      if (btn) {
+        btn.innerHTML = !isCompact
+          ? '<span class="lang-ja">標準表示</span><span class="lang-en">Standard View</span>'
+          : '<span class="lang-ja">コンパクト表示</span><span class="lang-en">Compact View</span>';
+      }
+    }
+
+    function setInterviewType(type) {
+      const hint = document.getElementById('interviewTypeHint');
+      if (!hint) return;
+      if (type === 'request') {
+        hint.innerHTML = '<span class="lang-ja">原稿依頼として回答を受け取る前提で、必要事項を記入します。</span><span class="lang-en">Use this when requesting written responses instead of live interviews.</span>';
+      } else {
+        hint.innerHTML = '<span class="lang-ja">直接話を聞く前提の質問とフォローを記録します。</span><span class="lang-en">Use this for live interviews with follow-up questions.</span>';
+      }
+
+      document.querySelectorAll('[data-interview-type]').forEach(block => {
+        const shouldShow = block.dataset.interviewType === type;
+        block.style.display = shouldShow ? 'block' : 'none';
+      });
+
+      if (type === 'direct') {
+        updateQuestionNumbers('direct');
+      } else {
+        updateQuestionNumbers('request');
+      }
+    }
+
+    function addInterviewee() {
+      const list = document.getElementById('intervieweeList');
+      const template = document.getElementById('intervieweeTemplate');
+      if (!list || !template) return;
+      const node = template.content.cloneNode(true);
+      list.appendChild(node);
+      updateIntervieweeIndexes();
+    }
+
+    function removeInterviewee(button) {
+      const card = button.closest('.interviewee-card');
+      if (card) {
+        card.remove();
+        updateIntervieweeIndexes();
+      }
+    }
+
+    function updateIntervieweeIndexes() {
+      const indexes = document.querySelectorAll('.interviewee-card .interviewee-index');
+      indexes.forEach((el, i) => {
+        el.textContent = i + 1;
+      });
+    }
+
+    function addQuestionItem(type, presetText) {
+      const listId = type === 'request' ? 'requestQuestionList' : 'directQuestionList';
+      const list = document.getElementById(listId);
+      if (!list) return;
+      const item = document.createElement('div');
+      item.className = 'question-item';
+
+      const header = document.createElement('div');
+      header.className = 'question-item-header';
+      const title = document.createElement('div');
+      title.className = 'question-item-title';
+      const badge = document.createElement('span');
+      badge.className = 'question-badge';
+      badge.textContent = type === 'request' ? 'R' : 'Q';
+      const label = document.createElement('span');
+      label.innerHTML = type === 'request'
+        ? '<span class="lang-ja">依頼項目</span><span class="lang-en">Request Item</span>'
+        : '<span class="lang-ja">質問</span><span class="lang-en">Question</span>';
+      title.appendChild(badge);
+      title.appendChild(label);
+      header.appendChild(title);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'btn btn-secondary';
+      removeBtn.type = 'button';
+      removeBtn.innerHTML = '<span class="lang-ja">削除</span><span class="lang-en">Remove</span>';
+      removeBtn.addEventListener('click', () => {
+        item.remove();
+        updateQuestionNumbers(type);
+      });
+      header.appendChild(removeBtn);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = presetText || '';
+      input.placeholder = type === 'request'
+        ? (document.body.getAttribute('data-lang') === 'ja' ? '依頼内容を入力' : 'Enter request item')
+        : (document.body.getAttribute('data-lang') === 'ja' ? '質問を入力' : 'Enter question');
+
+      const textarea = document.createElement('textarea');
+      textarea.placeholder = type === 'request'
+        ? (document.body.getAttribute('data-lang') === 'ja' ? '背景/狙い/条件など' : 'Background/aim/constraints')
+        : (document.body.getAttribute('data-lang') === 'ja' ? '深掘りや回答メモ' : 'Follow-up & notes');
+
+      item.appendChild(header);
+      item.appendChild(input);
+      item.appendChild(textarea);
+      list.appendChild(item);
+      updateQuestionNumbers(type);
+    }
+
+    function updateQuestionNumbers(type) {
+      const listId = type === 'request' ? 'requestQuestionList' : 'directQuestionList';
+      const list = document.getElementById(listId);
+      if (!list) return;
+      const items = list.querySelectorAll('.question-item');
+      items.forEach((item, index) => {
+        const badge = item.querySelector('.question-badge');
+        if (badge) {
+          badge.textContent = type === 'request' ? `R${index + 1}` : `Q${index + 1}`;
+        }
+      });
+      if (type === 'direct') {
+        const closingNumber = document.getElementById('closingQuestionNumber');
+        if (closingNumber) {
+          closingNumber.textContent = `Q${items.length + 1}`;
+        }
+      }
+    }
+
+    // クイックスタート
+    function showQuickStart() {
+      const quickStart = document.getElementById('quickStart');
+      if (quickStart) {
+        quickStart.style.display = 'block';
+      }
+    }
+
+    function dismissQuickStart() {
+      const quickStart = document.getElementById('quickStart');
+      if (quickStart) {
+        quickStart.style.display = 'none';
+      }
+      localStorage.setItem('prWorkflowFirstRun', 'false');
+    }
+
+    function updateDashboardProgress(percent, completed, total) {
+      const dashboardPercent = document.getElementById('dashboardProgressPercent');
+      const dashboardCompleted = document.getElementById('dashboardCompletedTasks');
+      const dashboardTotal = document.getElementById('dashboardTotalTasks');
+      if (dashboardPercent) dashboardPercent.textContent = percent;
+      if (dashboardCompleted) dashboardCompleted.textContent = completed;
+      if (dashboardTotal) dashboardTotal.textContent = total;
+    }
+
+    function setPhaseStatus(el, status) {
+      if (!el) return;
+      el.classList.remove('todo', 'doing', 'done');
+      el.classList.add(status);
+      if (status === 'todo') {
+        el.innerHTML = '<span class="lang-ja">未着手</span><span class="lang-en">Not Started</span>';
+      } else if (status === 'doing') {
+        el.innerHTML = '<span class="lang-ja">進行中</span><span class="lang-en">In Progress</span>';
+      } else {
+        el.innerHTML = '<span class="lang-ja">完了</span><span class="lang-en">Completed</span>';
+      }
+    }
+
+    function updateRequiredState() {
+      const requiredFields = document.querySelectorAll('input[data-required="true"], textarea[data-required="true"], select[data-required="true"]');
+      let remaining = 0;
+
+      requiredFields.forEach(field => {
+        const value = field.value ? field.value.trim() : '';
+        const invalid = value.length === 0;
+        field.classList.toggle('input-invalid', invalid);
+        if (invalid) remaining += 1;
+      });
+
+      const summary = document.getElementById('requiredSummary');
+      const remainingJa = document.getElementById('requiredRemaining');
+      const remainingEn = document.getElementById('requiredRemainingEn');
+      const dashboardRemainingJa = document.getElementById('dashboardRequiredRemaining');
+      const dashboardRemainingEn = document.getElementById('dashboardRequiredRemainingEn');
+      const dashboardCard = document.getElementById('dashboardRequiredCard');
+
+      if (remainingJa) remainingJa.textContent = remaining;
+      if (remainingEn) remainingEn.textContent = remaining;
+      if (summary) summary.classList.toggle('ok', remaining === 0);
+      if (dashboardRemainingJa) dashboardRemainingJa.textContent = remaining;
+      if (dashboardRemainingEn) dashboardRemainingEn.textContent = remaining;
+      if (dashboardCard) dashboardCard.classList.toggle('ok', remaining === 0);
+    }
+
+    // 進捗更新
+    function updateProgress() {
+      const rows = document.querySelectorAll('.workflow-row');
+      const total = rows.length;
+      let completed = 0;
+      rows.forEach(row => {
+        const status = row.querySelector('.workflow-status')?.value;
+        // 状態による色分け: data-status属性を設定
+        row.dataset.status = status || 'todo';
+        if (status === 'done') completed += 1;
+      });
+      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      document.getElementById('totalProgress').style.width = percent + '%';
+      document.getElementById('progressPercent').textContent = percent;
+      document.getElementById('completedTasks').textContent = completed;
+      document.getElementById('totalTasks').textContent = total;
+      updateDashboardProgress(percent, completed, total);
+
+      // 追加機能の更新
+      checkDeadlines();
+      updatePhaseProgress();
+      updateAssigneeWorkload();
+      checkDependencies();
+    }
+
+    // 期限超過チェック
+    function checkDeadlines() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const soon = new Date(today);
+      soon.setDate(soon.getDate() + 3); // 3日以内
+
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const status = row.querySelector('.workflow-status')?.value;
+        row.classList.remove('overdue', 'due-soon');
+
+        if (status === 'done') return;
+
+        const dateInput = row.querySelector('input[type="date"]');
+        if (!dateInput?.value) return;
+
+        const deadline = new Date(dateInput.value);
+        deadline.setHours(0, 0, 0, 0);
+
+        if (deadline < today) {
+          row.classList.add('overdue');
+        } else if (deadline <= soon) {
+          row.classList.add('due-soon');
+        }
+      });
+    }
+
+    // フェーズ別進捗更新
+    function updatePhaseProgress() {
+      const container = document.getElementById('phaseProgressBars');
+      if (!container) return;
+
+      const phases = {};
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const phaseCell = row.querySelector('td:first-child');
+        // ドラッグハンドルの後のテキストを取得
+        const phaseText = phaseCell?.textContent?.replace('≡', '').trim() || '';
+        const phase = phaseText || row.querySelector('td:first-child input')?.value?.trim() || '未分類';
+        const status = row.querySelector('.workflow-status')?.value;
+
+        if (!phases[phase]) phases[phase] = { total: 0, done: 0 };
+        phases[phase].total++;
+        if (status === 'done') phases[phase].done++;
+      });
+
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      container.innerHTML = Object.entries(phases).map(([name, data]) => {
+        const percent = data.total > 0 ? Math.round((data.done / data.total) * 100) : 0;
+        return `
+          <div class="phase-bar-item">
+            <span class="phase-name" title="${name}">${name}</span>
+            <div class="phase-bar">
+              <div class="phase-bar-fill" style="width: ${percent}%"></div>
+            </div>
+            <span class="phase-percent">${percent}%</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 担当者別作業量更新
+    function updateAssigneeWorkload() {
+      const container = document.getElementById('assigneeWorkloadBody');
+      if (!container) return;
+
+      const workload = {};
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const assignee = row.querySelector('.workflow-assignee')?.value?.trim() || '';
+        if (!assignee) return; // 未割当は除外
+
+        const status = row.querySelector('.workflow-status')?.value || 'todo';
+
+        if (!workload[assignee]) {
+          workload[assignee] = { todo: 0, doing: 0, review: 0, back: 0, done: 0, total: 0 };
+        }
+        workload[assignee][status]++;
+        workload[assignee].total++;
+      });
+
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const noDataMsg = lang === 'ja' ? '担当者が設定されていません' : 'No assignees set';
+
+      if (Object.keys(workload).length === 0) {
+        container.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--gray-500);">${noDataMsg}</td></tr>`;
+        return;
+      }
+
+      container.innerHTML = Object.entries(workload)
+        .sort((a, b) => b[1].total - a[1].total)
+        .map(([name, data]) => `
+          <tr>
+            <td>${name}</td>
+            <td>${data.todo}</td>
+            <td>${data.doing}</td>
+            <td>${data.review}</td>
+            <td>${data.done}</td>
+            <td><strong>${data.total}</strong></td>
+          </tr>
+        `).join('');
+    }
+
+    function applyWorkflowFilters() {
+      const assigneeFilter = document.getElementById('workflowAssigneeFilter')?.value?.trim().toLowerCase() || '';
+      const statusFilter = document.getElementById('workflowStatusFilter')?.value || '';
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const assignee = row.querySelector('.workflow-assignee')?.value?.trim().toLowerCase() || '';
+        const status = row.querySelector('.workflow-status')?.value || '';
+        const matchesAssignee = !assigneeFilter || assignee.includes(assigneeFilter);
+        const matchesStatus = !statusFilter || status === statusFilter;
+        row.style.display = matchesAssignee && matchesStatus ? '' : 'none';
+      });
+    }
+
+    function enableWorkflowDrag() {
+      const tbody = document.getElementById('workflowTableBody');
+      if (!tbody) return;
+      const rows = tbody.querySelectorAll('.workflow-row');
+      rows.forEach(row => {
+        const firstCell = row.querySelector('td');
+        if (firstCell && !firstCell.querySelector('.drag-handle')) {
+          const handle = document.createElement('span');
+          handle.className = 'drag-handle';
+          handle.title = 'Drag to reorder';
+          handle.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>';
+          handle.setAttribute('draggable', 'true');
+          handle.addEventListener('dragstart', (e) => {
+            row.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+          });
+          handle.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+            document.querySelectorAll('.workflow-row').forEach(r => r.classList.remove('drag-placeholder'));
+          });
+          firstCell.prepend(handle);
+        }
+      });
+
+      if (tbody.dataset.dragReady === 'true') return;
+      tbody.dataset.dragReady = 'true';
+      tbody.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const draggingRow = tbody.querySelector('.workflow-row.dragging');
+        if (!draggingRow) return;
+        const afterElement = getDragAfterRow(tbody, e.clientY);
+        document.querySelectorAll('.workflow-row').forEach(r => r.classList.remove('drag-placeholder'));
+        if (afterElement) afterElement.classList.add('drag-placeholder');
+        if (afterElement == null) {
+          tbody.appendChild(draggingRow);
+        } else {
+          tbody.insertBefore(draggingRow, afterElement);
+        }
+      });
+
+      tbody.addEventListener('drop', () => {
+        document.querySelectorAll('.workflow-row').forEach(r => r.classList.remove('drag-placeholder'));
+      });
+    }
+
+    function getDragAfterRow(container, y) {
+      const rows = [...container.querySelectorAll('.workflow-row:not(.dragging)')];
+      return rows.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset, element: child };
+        }
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function addWorkflowRow() {
+      const template = document.getElementById('workflowRowTemplate');
+      const body = document.getElementById('workflowTableBody');
+      if (!template || !body) return;
+      const node = template.content.cloneNode(true);
+      body.appendChild(node);
+
+      // 新しい行のプレースホルダーを設定
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const lastRow = body.lastElementChild;
+      if (lastRow) {
+        const textarea = lastRow.querySelector('textarea[data-placeholder-ja]');
+        if (textarea) {
+          textarea.placeholder = lang === 'ja' ? textarea.dataset.placeholderJa : textarea.dataset.placeholderEn;
+        }
+        // 担当者変更時の作業量更新
+        const assigneeInput = lastRow.querySelector('.workflow-assignee');
+        if (assigneeInput) {
+          assigneeInput.addEventListener('change', updateAssigneeWorkload);
+          assigneeInput.addEventListener('input', updateAssigneeWorkload);
+        }
+        // 期限変更時の警告チェック
+        const dateInput = lastRow.querySelector('input[type="date"]');
+        if (dateInput) {
+          dateInput.addEventListener('change', checkDeadlines);
+        }
+      }
+
+      applyWorkflowFilters();
+      enableWorkflowDrag();
+      setupStatusHandlers();
+      updateProgress();
+    }
+
+    function removeWorkflowRow(button) {
+      const row = button.closest('.workflow-row');
+      if (row) {
+        row.remove();
+        updateProgress();
+      }
+    }
+
+    // チェックリストのトグル
+    function toggleChecked(checkbox) {
+      const item = checkbox.closest('.checklist-item');
+      if (checkbox.checked) {
+        item.classList.add('checked');
+      } else {
+        item.classList.remove('checked');
+      }
+    }
+
+    // データ保存（LocalStorage）
+    function saveData() {
+      const lang = document.body.getAttribute('data-lang');
+      const fields = Array.from(document.querySelectorAll('input, textarea, select'))
+        .filter(el => {
+          const type = (el.type || '').toLowerCase();
+          return type !== 'button' && type !== 'submit' && type !== 'reset' && !el.readOnly;
+        });
+
+      const data = {
+        version: 3,
+        interviewType: document.querySelector('input[name="interviewType"]:checked')?.value || 'direct',
+        intervieweeCount: document.querySelectorAll('.interviewee-card').length,
+        directQuestionCount: document.querySelectorAll('#directQuestionList .question-item').length,
+        requestQuestionCount: document.querySelectorAll('#requestQuestionList .question-item').length,
+        workflowRowCount: document.querySelectorAll('.workflow-row').length,
+        fields: fields.map(el => ({
+          type: el.type || el.tagName.toLowerCase(),
+          value: el.value,
+          checked: el.checked
+        }))
+      };
+
+      localStorage.setItem('prWorkflowData', JSON.stringify(data));
+      alert(lang === 'ja' ? '保存しました' : 'Saved');
+    }
+
+    // データ読み込み
+    function loadData() {
+      const saved = localStorage.getItem('prWorkflowData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.version >= 3 && Array.isArray(data.fields)) {
+          if (data.interviewType) {
+            const typeInput = document.querySelector(`input[name="interviewType"][value="${data.interviewType}"]`);
+            if (typeInput) typeInput.checked = true;
+            setInterviewType(data.interviewType);
+          }
+
+          const intervieweeList = document.getElementById('intervieweeList');
+          if (intervieweeList) intervieweeList.innerHTML = '';
+          const intervieweeCount = Number(data.intervieweeCount || 0);
+          for (let i = 0; i < intervieweeCount; i++) {
+            addInterviewee();
+          }
+
+          const directList = document.getElementById('directQuestionList');
+          if (directList) directList.innerHTML = '';
+          const requestList = document.getElementById('requestQuestionList');
+          if (requestList) requestList.innerHTML = '';
+
+          const directCount = Number(data.directQuestionCount || 0);
+          const requestCount = Number(data.requestQuestionCount || 0);
+          for (let i = 0; i < directCount; i++) {
+            addQuestionItem('direct', '');
+          }
+          for (let i = 0; i < requestCount; i++) {
+            addQuestionItem('request', '');
+          }
+
+          const workflowBody = document.getElementById('workflowTableBody');
+          if (workflowBody) {
+            const currentRows = workflowBody.querySelectorAll('.workflow-row').length;
+            const targetRows = Number(data.workflowRowCount || currentRows);
+            if (targetRows > currentRows) {
+              for (let i = currentRows; i < targetRows; i++) {
+                addWorkflowRow();
+              }
+            } else if (targetRows < currentRows) {
+              const rows = Array.from(workflowBody.querySelectorAll('.workflow-row'));
+              rows.slice(targetRows).forEach(row => row.remove());
+            }
+          }
+
+          const fields = Array.from(document.querySelectorAll('input, textarea, select'))
+            .filter(el => {
+              const type = (el.type || '').toLowerCase();
+              return type !== 'button' && type !== 'submit' && type !== 'reset' && !el.readOnly;
+            });
+
+          fields.forEach((el, i) => {
+            const savedField = data.fields[i];
+            if (!savedField) return;
+            const type = (el.type || '').toLowerCase();
+            if (type === 'checkbox' || type === 'radio') {
+              el.checked = !!savedField.checked;
+            } else {
+              el.value = savedField.value ?? '';
+            }
+          });
+        } else if (data.version === 2 && Array.isArray(data.fields)) {
+          if (data.interviewType) {
+            const typeInput = document.querySelector(`input[name="interviewType"][value="${data.interviewType}"]`);
+            if (typeInput) typeInput.checked = true;
+            setInterviewType(data.interviewType);
+          }
+
+          const intervieweeList = document.getElementById('intervieweeList');
+          if (intervieweeList) intervieweeList.innerHTML = '';
+          const intervieweeCount = Number(data.intervieweeCount || 0);
+          for (let i = 0; i < intervieweeCount; i++) {
+            addInterviewee();
+          }
+
+          const directList = document.getElementById('directQuestionList');
+          if (directList) directList.innerHTML = '';
+          const requestList = document.getElementById('requestQuestionList');
+          if (requestList) requestList.innerHTML = '';
+
+          const directCount = Number(data.directQuestionCount || 0);
+          const requestCount = Number(data.requestQuestionCount || 0);
+          for (let i = 0; i < directCount; i++) {
+            addQuestionItem('direct', '');
+          }
+          for (let i = 0; i < requestCount; i++) {
+            addQuestionItem('request', '');
+          }
+
+          const fields = Array.from(document.querySelectorAll('input, textarea, select'))
+            .filter(el => {
+              const type = (el.type || '').toLowerCase();
+              return type !== 'button' && type !== 'submit' && type !== 'reset' && !el.readOnly;
+            });
+
+          fields.forEach((el, i) => {
+            const savedField = data.fields[i];
+            if (!savedField) return;
+            const type = (el.type || '').toLowerCase();
+            if (type === 'checkbox' || type === 'radio') {
+              el.checked = !!savedField.checked;
+            } else {
+              el.value = savedField.value ?? '';
+            }
+          });
+        } else {
+          if (data.projectName) document.getElementById('projectName').value = data.projectName;
+          if (data.publishDate) document.getElementById('publishDate').value = data.publishDate;
+          if (data.purpose) document.getElementById('purpose').value = data.purpose;
+          if (data.targetAudience) document.getElementById('targetAudience').value = data.targetAudience;
+          if (data.coreMessage) document.getElementById('coreMessage').value = data.coreMessage;
+          if (data.person) document.getElementById('person').value = data.person;
+          if (data.approver) document.getElementById('approver').value = data.approver;
+
+          if (data.tasks) {
+            document.querySelectorAll('.task-item input[type="checkbox"]').forEach((cb, i) => {
+              if (data.tasks[i]) {
+                cb.checked = true;
+              }
+            });
+          }
+
+          if (data.checklists) {
+            document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach((cb, i) => {
+              if (data.checklists[i]) {
+                cb.checked = true;
+                cb.closest('.checklist-item').classList.add('checked');
+              }
+            });
+          }
+        }
+
+        document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach((cb) => {
+          if (cb.checked) cb.closest('.checklist-item').classList.add('checked');
+        });
+
+        updateProgress();
+        updateRequiredState();
+        updateQuestionNumbers('direct');
+        updateQuestionNumbers('request');
+      }
+    }
+
+    // データエクスポート
+    function exportData() {
+      const data = localStorage.getItem('prWorkflowData');
+      if (data) {
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pr-workflow-data.json';
+        a.click();
+      }
+    }
+
+    function exportCsv() {
+      const data = localStorage.getItem('prWorkflowData');
+      if (!data) return;
+      const parsed = JSON.parse(data);
+
+      const rows = [];
+      rows.push(['section', 'label', 'value'].join(','));
+
+      const fields = Array.from(document.querySelectorAll('input, textarea, select'))
+        .filter(el => {
+          const type = (el.type || '').toLowerCase();
+          return type !== 'button' && type !== 'submit' && type !== 'reset' && !el.readOnly;
+        });
+
+      fields.forEach((el, i) => {
+        const label = el.closest('.form-group')?.querySelector('label')?.innerText?.replace(/\s+/g, ' ') || el.name || el.id || `field_${i}`;
+        let value = '';
+        const type = (el.type || '').toLowerCase();
+        if (type === 'checkbox' || type === 'radio') {
+          value = el.checked ? 'true' : 'false';
+        } else {
+          value = el.value || '';
+        }
+        const section = el.closest('.panel')?.id || 'global';
+        rows.push([section, escapeCsv(label), escapeCsv(value)].join(','));
+      });
+
+      if (parsed?.interviewType) {
+        rows.push(['meta', 'interviewType', escapeCsv(parsed.interviewType)].join(','));
+      }
+
+      const csv = rows.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pr-workflow-data.csv';
+      a.click();
+    }
+
+    function escapeCsv(value) {
+      const v = String(value ?? '');
+      if (v.includes('"') || v.includes(',') || v.includes('\n')) {
+        return '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    }
+
+    function clearData() {
+      const lang = document.body.getAttribute('data-lang');
+      const ok = confirm(lang === 'ja' ? '保存データを消去します。よろしいですか？' : 'Clear saved data. Continue?');
+      if (!ok) return;
+      localStorage.removeItem('prWorkflowData');
+      localStorage.removeItem('prWorkflowChangeLog');
+      location.reload();
+    }
+
+    // ========================================
+    // タスクガイダンスデータ（40タスク分）
+    // ========================================
+    const TASK_GUIDANCE = {
+      // === 企画・構成フェーズ ===
+      '目的/ゴールの明確化': {
+        description: '広報物を作成する目的と達成したいゴールを明文化します。「なぜこの広報物が必要か」を関係者全員が共有できる状態を目指します。',
+        deliverable: '目的・ゴール記述書（A4 1枚程度）',
+        tips: ['「誰に」「何を」「どうしてほしいか」の3点を必ず含める', '数値目標があれば明記（問い合わせ数、認知度等）', '上長や決裁者の承認を得ておくとスムーズ'],
+        checkpoints: ['目的が1文で説明できるか', 'ターゲットに到達可能な手段か', '予算・期間内で実現可能か'],
+        dependencies: []
+      },
+      'ターゲット/ペルソナ設定': {
+        description: '想定読者の属性・課題・ニーズを具体的な人物像として定義します。',
+        deliverable: 'ペルソナシート（1-3人分）',
+        tips: ['実在の知人をモデルにすると具体化しやすい', '「この人が読んだらどう感じるか」を常に意識', '複数ペルソナがある場合は優先順位を付ける'],
+        checkpoints: ['年齢・職業・役職が明確か', '抱えている課題や悩みが特定できているか', '情報収集の方法が分かっているか'],
+        dependencies: ['目的/ゴールの明確化']
+      },
+      '競合/類似物調査': {
+        description: '競合他社や類似の広報物を収集・分析し、差別化ポイントを見つけます。',
+        deliverable: '競合調査レポート（比較表含む）',
+        tips: ['3-5件程度の類似物を集める', '良い点・改善点を両方メモする', 'デザイン、メッセージ、構成をチェック'],
+        checkpoints: ['主要な競合を網羅しているか', '差別化ポイントが明確になったか'],
+        dependencies: ['目的/ゴールの明確化']
+      },
+      'コアメッセージ決定': {
+        description: '広報物全体を貫く核となるメッセージを決定します。',
+        deliverable: 'コアメッセージ文（1-2文）',
+        tips: ['読者が一番覚えてほしいことを1文で', 'ベネフィット（読者の利益）を入れる', '競合と差別化できる表現を選ぶ'],
+        checkpoints: ['読者目線で魅力的か', '簡潔で覚えやすいか', '全体の方向性を示せているか'],
+        dependencies: ['ターゲット/ペルソナ設定', '競合/類似物調査']
+      },
+      '構成案/台割作成': {
+        description: 'ページ構成と各ページの役割を決めます。',
+        deliverable: '台割表（ページ割り付け表）',
+        tips: ['読者の関心の流れに沿って配置', '重要な情報は前半に', '見開き単位で考える'],
+        checkpoints: ['情報の過不足がないか', '読者が迷わない流れになっているか', 'ページ数は適切か'],
+        dependencies: ['コアメッセージ決定']
+      },
+      'スケジュール/予算確定': {
+        description: '制作から納品までのスケジュールと予算を確定します。',
+        deliverable: 'スケジュール表、予算書',
+        tips: ['校正や修正の時間を十分に確保', '外注費用は見積もりを取る', '印刷部数と単価を確認'],
+        checkpoints: ['各工程の担当者が決まっているか', '締め切りに余裕があるか', '予算内に収まるか'],
+        dependencies: ['構成案/台割作成']
+      },
+      '企画承認': {
+        description: '企画内容について関係者の承認を得ます。',
+        deliverable: '承認済み企画書',
+        tips: ['決裁者には事前に相談しておく', '懸念点は先に対策を用意', '承認履歴を記録しておく'],
+        checkpoints: ['必要な決裁者全員の承認を得たか', '修正指示は明確に記録したか'],
+        dependencies: ['目的/ゴールの明確化', 'スケジュール/予算確定']
+      },
+      // === 取材・素材フェーズ ===
+      '取材対象者リスト作成': {
+        description: '取材が必要な人物をリストアップし、優先順位を付けます。',
+        deliverable: '取材対象者リスト（連絡先、役割含む）',
+        tips: ['キーパーソンを特定する', '代替候補も用意しておく', '取材の目的と聞きたいことを整理'],
+        checkpoints: ['必要な取材対象を網羅しているか', '連絡先は確認できているか'],
+        dependencies: ['構成案/台割作成']
+      },
+      '取材質問設計': {
+        description: '取材で聞く質問を事前に設計します。',
+        deliverable: '質問リスト',
+        tips: ['オープンクエスチョンを中心に', '「なぜ」「どのように」を多用', '想定回答に対する深掘り質問も用意'],
+        checkpoints: ['広報物に必要な情報を引き出せる質問か', '時間内に収まる量か'],
+        dependencies: ['取材対象者リスト作成']
+      },
+      '取材アポイント調整': {
+        description: '取材対象者との日程・場所を調整します。',
+        deliverable: '取材スケジュール表',
+        tips: ['候補日は複数提示', '所要時間を明確に伝える', '取材目的と使用用途を説明'],
+        checkpoints: ['全員の日程が確定したか', '場所・機材の手配は済んでいるか'],
+        dependencies: ['取材質問設計']
+      },
+      '取材実施/記録': {
+        description: '取材を実施し、内容を記録します。',
+        deliverable: '取材記録（録音データ、メモ）',
+        tips: ['録音許可を必ず取る', '表情や雰囲気もメモ', '写真撮影の許可も確認'],
+        checkpoints: ['必要な情報は聞けたか', '記録は正確に残せているか'],
+        dependencies: ['取材アポイント調整']
+      },
+      '文字起こし/記録整理': {
+        description: '取材内容を文字に起こし、整理します。',
+        deliverable: '取材記録文書',
+        tips: ['重要な発言にはマーキング', '使えそうな引用をピックアップ', '不明点は早めに確認'],
+        checkpoints: ['引用として使える発言を抽出したか', '事実確認が必要な箇所を特定したか'],
+        dependencies: ['取材実施/記録']
+      },
+      '写真/素材撮影・収集': {
+        description: '広報物に使用する写真や素材を撮影・収集します。',
+        deliverable: '写真データ、素材ファイル',
+        tips: ['複数アングルで撮影', '高解像度で保存', '使用許諾を確認'],
+        checkpoints: ['必要なカットは揃っているか', '画質は印刷に耐えるか', '肖像権・著作権は確認したか'],
+        dependencies: ['構成案/台割作成']
+      },
+      '素材の不足確認/追加入手': {
+        description: '不足している素材を特定し、追加で入手します。',
+        deliverable: '追加素材',
+        tips: ['台割と照らし合わせてチェック', '代替案も検討', '入手に時間がかかるものは早めに'],
+        checkpoints: ['全ての素材が揃ったか', '品質は十分か'],
+        dependencies: ['写真/素材撮影・収集', '文字起こし/記録整理']
+      },
+      // === 原稿作成フェーズ ===
+      '初稿執筆': {
+        description: '取材内容と構成案をもとに原稿の初稿を執筆します。',
+        deliverable: '原稿初稿',
+        tips: ['まずは書き切ることを優先', '読者目線を意識', 'コアメッセージを繰り返し確認'],
+        checkpoints: ['コアメッセージが伝わる内容か', '文字数は適切か', '事実に誤りがないか'],
+        dependencies: ['構成案/台割作成', '文字起こし/記録整理']
+      },
+      'キャッチ/見出し案作成': {
+        description: 'キャッチコピーや見出しの案を複数作成します。',
+        deliverable: 'キャッチコピー案、見出し案（各3-5案）',
+        tips: ['読者の興味を引く表現を', '数字や具体性を入れる', '短く印象的に'],
+        checkpoints: ['目を引く表現になっているか', '内容と一致しているか', '競合と差別化できているか'],
+        dependencies: ['初稿執筆']
+      },
+      '内部レビュー（文章）': {
+        description: '原稿を関係者に回覧し、フィードバックを収集します。',
+        deliverable: 'レビューコメント一覧',
+        tips: ['レビュー観点を明示して依頼', '締め切りを設定', '矛盾する意見は調整が必要'],
+        checkpoints: ['必要な関係者全員からフィードバックを得たか', '修正方針は明確か'],
+        dependencies: ['初稿執筆', 'キャッチ/見出し案作成']
+      },
+      '修正/第2稿作成': {
+        description: 'レビューを踏まえて原稿を修正します。',
+        deliverable: '原稿第2稿',
+        tips: ['指摘事項を一覧化してから着手', '修正箇所を明示', '新たな問題を生まないよう注意'],
+        checkpoints: ['指摘事項は全て対応したか', '修正により文脈が崩れていないか'],
+        dependencies: ['内部レビュー（文章）']
+      },
+      '対象者/関係者確認': {
+        description: '取材対象者や関係者に原稿内容を確認してもらいます。',
+        deliverable: '確認済み原稿',
+        tips: ['確認期限を明示', '修正可能な範囲を伝える', '確認履歴を記録'],
+        checkpoints: ['発言内容に誤りがないか', '公開して問題ない内容か'],
+        dependencies: ['修正/第2稿作成']
+      },
+      '原稿確定': {
+        description: '原稿の最終版を確定します。',
+        deliverable: '確定原稿',
+        tips: ['これ以降の修正は最小限に', '確定日を記録', 'バージョン管理を徹底'],
+        checkpoints: ['必要な承認を全て得たか', '誤字脱字の最終チェックは済んだか'],
+        dependencies: ['対象者/関係者確認']
+      },
+      // === 編集・組版フェーズ ===
+      'デザインコンセプト決定': {
+        description: '広報物全体のデザインの方向性を決定します。',
+        deliverable: 'デザインコンセプトシート、ムードボード',
+        tips: ['ターゲットの好みを考慮', '競合との差別化を意識', '参考イメージを集める'],
+        checkpoints: ['コアメッセージと一致しているか', '実現可能なデザインか'],
+        dependencies: ['コアメッセージ決定', '構成案/台割作成']
+      },
+      'ラフレイアウト作成': {
+        description: '各ページの大まかなレイアウトを作成します。',
+        deliverable: 'ラフレイアウト',
+        tips: ['手書きでも可', '要素の優先順位を意識', '余白を十分に取る'],
+        checkpoints: ['情報の階層が明確か', '視線の流れは自然か'],
+        dependencies: ['デザインコンセプト決定']
+      },
+      '写真/図版選定・配置': {
+        description: '使用する写真や図版を選定し、配置を決めます。',
+        deliverable: '写真・図版配置案',
+        tips: ['高品質なものを選ぶ', '統一感を意識', 'キャプションの要否を確認'],
+        checkpoints: ['全ての素材が揃っているか', '配置は適切か'],
+        dependencies: ['ラフレイアウト作成', '素材の不足確認/追加入手']
+      },
+      '初稿組版作成': {
+        description: 'デザインソフトで実際の組版を作成します。',
+        deliverable: '組版初稿（PDF等）',
+        tips: ['文字サイズ・行間を適切に', '印刷を想定した色設定', '校正用にPDF出力'],
+        checkpoints: ['文字は読みやすいか', '写真の解像度は十分か', 'はみ出し等はないか'],
+        dependencies: ['原稿確定', '写真/図版選定・配置']
+      },
+      '内部レビュー（デザイン）': {
+        description: 'デザインを関係者に確認してもらいます。',
+        deliverable: 'デザインレビューコメント',
+        tips: ['画面と印刷で見え方が違うことを考慮', '複数の目でチェック', '優先度を付けてフィードバック'],
+        checkpoints: ['デザインコンセプトに沿っているか', '読みやすさは確保できているか'],
+        dependencies: ['初稿組版作成']
+      },
+      'デザイン修正': {
+        description: 'レビューを踏まえてデザインを修正します。',
+        deliverable: '修正版デザイン',
+        tips: ['修正履歴を残す', '大きな変更は再確認を', '細部まで丁寧に'],
+        checkpoints: ['指摘事項は全て対応したか', '新たな問題は生じていないか'],
+        dependencies: ['内部レビュー（デザイン）']
+      },
+      'デザイン確定': {
+        description: 'デザインの最終版を確定します。',
+        deliverable: '確定デザイン',
+        tips: ['確定後の修正は避ける', '印刷用データの形式を確認', 'バックアップを取る'],
+        checkpoints: ['必要な承認を得たか', '印刷仕様に合っているか'],
+        dependencies: ['デザイン修正']
+      },
+      // === 校正フェーズ ===
+      '初校チェック': {
+        description: '組版の初校を校正します。',
+        deliverable: '初校ゲラ（赤字入り）',
+        tips: ['誤字脱字を重点的に', '事実関係も再確認', '複数人でチェック'],
+        checkpoints: ['誤字脱字はないか', '数字・固有名詞は正確か', 'レイアウト崩れはないか'],
+        dependencies: ['デザイン確定']
+      },
+      '初校赤字反映': {
+        description: '初校の校正結果を反映します。',
+        deliverable: '修正版組版',
+        tips: ['赤字を一つずつ確認しながら反映', '反映漏れに注意', '修正前後を比較'],
+        checkpoints: ['全ての赤字を反映したか', '新たなミスを生んでいないか'],
+        dependencies: ['初校チェック']
+      },
+      '再校チェック': {
+        description: '修正後の再校を確認します。',
+        deliverable: '再校ゲラ（赤字入り）',
+        tips: ['初校の修正箇所を重点確認', '全体の整合性もチェック', '読者目線で通読'],
+        checkpoints: ['初校の指摘は正しく反映されているか', '新たな問題はないか'],
+        dependencies: ['初校赤字反映']
+      },
+      '再校赤字反映': {
+        description: '再校の校正結果を反映します。',
+        deliverable: '修正版組版',
+        tips: ['慎重に反映', '必要に応じて三校へ'],
+        checkpoints: ['全ての赤字を反映したか', '修正による副作用はないか'],
+        dependencies: ['再校チェック']
+      },
+      '三校チェック': {
+        description: '最終確認として三校をチェックします。',
+        deliverable: '三校ゲラ（赤字入り）',
+        tips: ['最終チェックの意識で', '細部まで確認', '印刷に出しても問題ないか判断'],
+        checkpoints: ['完成度は十分か', '見落としはないか'],
+        dependencies: ['再校赤字反映']
+      },
+      '三校赤字反映': {
+        description: '三校の校正結果を反映します。',
+        deliverable: '最終版組版',
+        tips: ['最小限の修正に留める', '修正後は再度確認'],
+        checkpoints: ['校了できる状態か'],
+        dependencies: ['三校チェック']
+      },
+      // === 色校正フェーズ ===
+      '色校正出し/確認': {
+        description: '印刷機で出力した色校正を確認します。',
+        deliverable: '色校正紙',
+        tips: ['自然光で確認', '画面との違いをチェック', '重要な写真は特に注意'],
+        checkpoints: ['色味は意図通りか', '印刷品質は問題ないか'],
+        dependencies: ['三校赤字反映']
+      },
+      '色校正戻し/確定': {
+        description: '色校正の結果を印刷会社に戻し、確定します。',
+        deliverable: '色校正戻し指示書',
+        tips: ['修正箇所は具体的に指示', '許容範囲を明示', '最終確認の意識で'],
+        checkpoints: ['印刷に進んで問題ないか', '修正指示は明確か'],
+        dependencies: ['色校正出し/確認']
+      },
+      // === 入稿・公開フェーズ ===
+      '入稿データ作成': {
+        description: '印刷会社に渡す入稿データを作成します。',
+        deliverable: '入稿データ一式',
+        tips: ['印刷会社の仕様を確認', 'フォントの埋め込み', '画像のリンク切れ注意'],
+        checkpoints: ['データに不備はないか', '仕様通りに作成されているか'],
+        dependencies: ['色校正戻し/確定']
+      },
+      '印刷発注/公開準備': {
+        description: '印刷を発注、またはWeb公開の準備をします。',
+        deliverable: '発注書、公開準備完了報告',
+        tips: ['納期・部数を再確認', '納品場所を手配', '公開日時を関係者に周知'],
+        checkpoints: ['発注内容は正確か', '受け取り体制は整っているか'],
+        dependencies: ['入稿データ作成']
+      },
+      '校了/最終承認': {
+        description: '制作物の最終承認を行い、校了とします。',
+        deliverable: '校了承認書',
+        tips: ['責任者の最終確認', '校了後の修正は原則不可', '校了日を記録'],
+        checkpoints: ['全ての承認者から了承を得たか', '公開して問題ないか'],
+        dependencies: ['印刷発注/公開準備']
+      },
+      '納品/公開': {
+        description: '完成した広報物を納品、または公開します。',
+        deliverable: '納品物、公開完了報告',
+        tips: ['納品物の検品', '公開後の動作確認', '関係者への報告'],
+        checkpoints: ['納品物に問題はないか', '公開は正しく行われたか'],
+        dependencies: ['校了/最終承認']
+      },
+      '配布/告知': {
+        description: '広報物を配布し、関係者に告知します。',
+        deliverable: '配布完了報告',
+        tips: ['配布先リストを作成', '配布方法を確認', 'SNS等での告知も検討'],
+        checkpoints: ['予定通り配布できたか', '反響を記録しているか'],
+        dependencies: ['納品/公開']
+      },
+      '振り返り/ナレッジ整理': {
+        description: 'プロジェクト全体を振り返り、学びを整理します。',
+        deliverable: '振り返りレポート',
+        tips: ['良かった点・改善点を両方', '次回に活かせる形で記録', 'チームで共有'],
+        checkpoints: ['反省点は明確か', '次回のアクションは決まったか'],
+        dependencies: ['配布/告知']
+      }
+    };
+
+    // 英語版タスクガイダンス
+    const TASK_GUIDANCE_EN = {
+      '目的/ゴールの明確化': {
+        description: 'Document the purpose and goals of creating the PR materials. Aim for a state where all stakeholders share understanding of "why this material is needed."',
+        deliverable: 'Purpose & Goal Statement (about 1 page)',
+        tips: ['Include "who," "what," and "desired action"', 'Specify numerical targets if applicable (inquiries, awareness, etc.)', 'Get approval from supervisors early'],
+        checkpoints: ['Can the purpose be explained in one sentence?', 'Is the target audience reachable?', 'Is it achievable within budget and timeline?']
+      },
+      'ターゲット/ペルソナ設定': {
+        description: 'Define the target reader\'s attributes, challenges, and needs as a concrete persona.',
+        deliverable: 'Persona Sheet (1-3 personas)',
+        tips: ['Use real acquaintances as models for specificity', 'Always consider "how would this person feel reading this?"', 'Prioritize if multiple personas exist'],
+        checkpoints: ['Are age, occupation, and position clear?', 'Are their challenges identified?', 'Do you know how they gather information?']
+      },
+      '競合/類似物調査': {
+        description: 'Collect and analyze competitor or similar materials to find differentiation points.',
+        deliverable: 'Competitor Research Report (with comparison table)',
+        tips: ['Collect 3-5 similar materials', 'Note both strengths and areas for improvement', 'Check design, message, and structure'],
+        checkpoints: ['Have major competitors been covered?', 'Are differentiation points clear?']
+      },
+      'コアメッセージ決定': {
+        description: 'Determine the core message that runs through the entire PR material.',
+        deliverable: 'Core Message Statement (1-2 sentences)',
+        tips: ['Summarize what readers should remember most in one sentence', 'Include benefits for the reader', 'Choose expressions that differentiate from competitors'],
+        checkpoints: ['Is it attractive from the reader\'s perspective?', 'Is it concise and memorable?', 'Does it indicate the overall direction?']
+      },
+      '構成案/台割作成': {
+        description: 'Determine page structure and the role of each page.',
+        deliverable: 'Layout Plan (page allocation table)',
+        tips: ['Arrange according to reader interest flow', 'Place important information early', 'Think in spreads'],
+        checkpoints: ['Is there neither too much nor too little information?', 'Is the flow easy to follow?', 'Is the page count appropriate?']
+      },
+      'スケジュール/予算確定': {
+        description: 'Finalize the schedule from production to delivery and the budget.',
+        deliverable: 'Schedule, Budget Document',
+        tips: ['Allow sufficient time for proofreading and revisions', 'Get quotes for outsourcing costs', 'Confirm print quantity and unit price'],
+        checkpoints: ['Are persons in charge assigned for each phase?', 'Is there buffer in deadlines?', 'Is it within budget?']
+      },
+      '企画承認': {
+        description: 'Obtain approval from stakeholders on the plan.',
+        deliverable: 'Approved Planning Document',
+        tips: ['Consult with decision-makers beforehand', 'Prepare countermeasures for concerns', 'Record approval history'],
+        checkpoints: ['Have all necessary approvers signed off?', 'Are revision instructions clearly recorded?']
+      },
+      '取材対象者リスト作成': {
+        description: 'List people who need to be interviewed and prioritize them.',
+        deliverable: 'Interviewee List (with contact info and roles)',
+        tips: ['Identify key persons', 'Prepare alternatives', 'Organize interview purposes and questions'],
+        checkpoints: ['Are all necessary interviewees covered?', 'Is contact information confirmed?']
+      },
+      '取材質問設計': {
+        description: 'Design interview questions in advance.',
+        deliverable: 'Question List',
+        tips: ['Focus on open-ended questions', 'Use "why" and "how" frequently', 'Prepare follow-up questions for expected answers'],
+        checkpoints: ['Can the questions extract information needed for the PR material?', 'Will it fit within the time?']
+      },
+      '取材アポイント調整': {
+        description: 'Coordinate dates and locations with interviewees.',
+        deliverable: 'Interview Schedule',
+        tips: ['Offer multiple date options', 'Clearly communicate duration', 'Explain purpose and usage'],
+        checkpoints: ['Are all schedules confirmed?', 'Are venue and equipment arranged?']
+      },
+      '取材実施/記録': {
+        description: 'Conduct interviews and record the content.',
+        deliverable: 'Interview Records (audio, notes)',
+        tips: ['Always get recording permission', 'Note facial expressions and atmosphere too', 'Confirm photo permission'],
+        checkpoints: ['Was necessary information obtained?', 'Are records accurate?']
+      },
+      '文字起こし/記録整理': {
+        description: 'Transcribe and organize interview content.',
+        deliverable: 'Interview Transcript Document',
+        tips: ['Mark important statements', 'Pick out usable quotes', 'Clarify unclear points early'],
+        checkpoints: ['Have usable quotes been extracted?', 'Have items needing fact-checking been identified?']
+      },
+      '写真/素材撮影・収集': {
+        description: 'Shoot or collect photos and materials for the PR piece.',
+        deliverable: 'Photo Data, Material Files',
+        tips: ['Shoot from multiple angles', 'Save in high resolution', 'Confirm usage permissions'],
+        checkpoints: ['Are all needed shots ready?', 'Is quality sufficient for printing?', 'Are portrait/copyright rights confirmed?']
+      },
+      '素材の不足確認/追加入手': {
+        description: 'Identify missing materials and obtain them additionally.',
+        deliverable: 'Additional Materials',
+        tips: ['Check against the layout plan', 'Consider alternatives', 'Start early for time-consuming items'],
+        checkpoints: ['Are all materials complete?', 'Is quality sufficient?']
+      },
+      '初稿執筆': {
+        description: 'Write the first draft based on interview content and structure.',
+        deliverable: 'First Draft',
+        tips: ['Prioritize completing the draft first', 'Be conscious of the reader\'s perspective', 'Keep referring to the core message'],
+        checkpoints: ['Does it convey the core message?', 'Is the word count appropriate?', 'Are facts accurate?']
+      },
+      'キャッチ/見出し案作成': {
+        description: 'Create multiple catchphrase and headline options.',
+        deliverable: 'Catchphrases, Headlines (3-5 options each)',
+        tips: ['Use expressions that grab reader interest', 'Include numbers and specifics', 'Keep short and impactful'],
+        checkpoints: ['Are they eye-catching?', 'Do they match the content?', 'Do they differentiate from competitors?']
+      },
+      '内部レビュー（文章）': {
+        description: 'Circulate the draft to stakeholders and collect feedback.',
+        deliverable: 'Review Comments List',
+        tips: ['Specify review criteria when requesting', 'Set deadlines', 'Conflicting opinions need coordination'],
+        checkpoints: ['Has feedback been received from all necessary stakeholders?', 'Is the revision policy clear?']
+      },
+      '修正/第2稿作成': {
+        description: 'Revise the draft based on reviews.',
+        deliverable: 'Second Draft',
+        tips: ['List all feedback items before starting', 'Highlight revised sections', 'Be careful not to create new problems'],
+        checkpoints: ['Have all feedback items been addressed?', 'Has the revision not disrupted context?']
+      },
+      '対象者/関係者確認': {
+        description: 'Have interviewees and stakeholders verify the draft content.',
+        deliverable: 'Verified Draft',
+        tips: ['Specify confirmation deadline', 'Communicate scope of possible revisions', 'Record confirmation history'],
+        checkpoints: ['Are statements accurate?', 'Is the content suitable for publication?']
+      },
+      '原稿確定': {
+        description: 'Finalize the final version of the manuscript.',
+        deliverable: 'Finalized Manuscript',
+        tips: ['Keep revisions minimal after this', 'Record the finalization date', 'Maintain thorough version control'],
+        checkpoints: ['Have all necessary approvals been obtained?', 'Has final typo check been done?']
+      },
+      'デザインコンセプト決定': {
+        description: 'Determine the overall design direction of the PR material.',
+        deliverable: 'Design Concept Sheet, Mood Board',
+        tips: ['Consider target preferences', 'Be conscious of differentiation from competitors', 'Collect reference images'],
+        checkpoints: ['Does it align with the core message?', 'Is the design achievable?']
+      },
+      'ラフレイアウト作成': {
+        description: 'Create rough layouts for each page.',
+        deliverable: 'Rough Layout',
+        tips: ['Hand-drawn is acceptable', 'Be conscious of element priority', 'Leave sufficient white space'],
+        checkpoints: ['Is information hierarchy clear?', 'Is the visual flow natural?']
+      },
+      '写真/図版選定・配置': {
+        description: 'Select photos and illustrations and determine placement.',
+        deliverable: 'Photo/Illustration Placement Plan',
+        tips: ['Choose high-quality ones', 'Be conscious of consistency', 'Confirm if captions are needed'],
+        checkpoints: ['Are all materials ready?', 'Is placement appropriate?']
+      },
+      '初稿組版作成': {
+        description: 'Create actual typesetting using design software.',
+        deliverable: 'First Typeset Draft (PDF, etc.)',
+        tips: ['Set appropriate font size and line spacing', 'Use print-ready color settings', 'Export PDF for proofreading'],
+        checkpoints: ['Is text readable?', 'Is image resolution sufficient?', 'Is there any overflow?']
+      },
+      '内部レビュー（デザイン）': {
+        description: 'Have stakeholders review the design.',
+        deliverable: 'Design Review Comments',
+        tips: ['Consider that screen and print look different', 'Have multiple people check', 'Prioritize feedback'],
+        checkpoints: ['Does it follow the design concept?', 'Is readability ensured?']
+      },
+      'デザイン修正': {
+        description: 'Revise design based on review.',
+        deliverable: 'Revised Design',
+        tips: ['Keep revision history', 'Re-confirm for major changes', 'Be thorough with details'],
+        checkpoints: ['Have all feedback items been addressed?', 'Have no new problems arisen?']
+      },
+      'デザイン確定': {
+        description: 'Finalize the final design version.',
+        deliverable: 'Finalized Design',
+        tips: ['Avoid revisions after finalization', 'Confirm print data format', 'Take backups'],
+        checkpoints: ['Have necessary approvals been obtained?', 'Does it meet print specifications?']
+      },
+      '初校チェック': {
+        description: 'Proofread the first typeset proof.',
+        deliverable: 'First Proof with Corrections',
+        tips: ['Focus on typos', 'Re-verify facts', 'Have multiple people check'],
+        checkpoints: ['Are there no typos?', 'Are numbers and proper nouns accurate?', 'Is there no layout collapse?']
+      },
+      '初校赤字反映': {
+        description: 'Apply first proof corrections.',
+        deliverable: 'Revised Typeset',
+        tips: ['Verify each correction as you apply', 'Be careful not to miss any', 'Compare before and after'],
+        checkpoints: ['Have all corrections been applied?', 'Have no new mistakes been introduced?']
+      },
+      '再校チェック': {
+        description: 'Check the revised second proof.',
+        deliverable: 'Second Proof with Corrections',
+        tips: ['Focus on checking first proof corrections', 'Also check overall consistency', 'Read through from reader\'s perspective'],
+        checkpoints: ['Were first proof corrections properly applied?', 'Are there no new issues?']
+      },
+      '再校赤字反映': {
+        description: 'Apply second proof corrections.',
+        deliverable: 'Revised Typeset',
+        tips: ['Apply carefully', 'Proceed to third proof if needed'],
+        checkpoints: ['Have all corrections been applied?', 'Are there no side effects from revisions?']
+      },
+      '三校チェック': {
+        description: 'Check third proof as final verification.',
+        deliverable: 'Third Proof with Corrections',
+        tips: ['Approach as final check', 'Verify details', 'Judge if ready for printing'],
+        checkpoints: ['Is completion level sufficient?', 'Is anything overlooked?']
+      },
+      '三校赤字反映': {
+        description: 'Apply third proof corrections.',
+        deliverable: 'Final Typeset',
+        tips: ['Keep revisions minimal', 'Re-verify after revisions'],
+        checkpoints: ['Is it ready for final approval?']
+      },
+      '色校正出し/確認': {
+        description: 'Check color proof output from the printing press.',
+        deliverable: 'Color Proof',
+        tips: ['Check under natural light', 'Compare with screen', 'Pay special attention to important photos'],
+        checkpoints: ['Are colors as intended?', 'Is print quality acceptable?']
+      },
+      '色校正戻し/確定': {
+        description: 'Return color proof feedback to printer and finalize.',
+        deliverable: 'Color Proof Return Instructions',
+        tips: ['Give specific revision instructions', 'Specify tolerance range', 'Approach as final confirmation'],
+        checkpoints: ['Is it ready to proceed to printing?', 'Are revision instructions clear?']
+      },
+      '入稿データ作成': {
+        description: 'Prepare submission data for the printer.',
+        deliverable: 'Submission Data Package',
+        tips: ['Confirm printer specifications', 'Embed fonts', 'Watch for broken image links'],
+        checkpoints: ['Is data error-free?', 'Is it created according to specifications?']
+      },
+      '印刷発注/公開準備': {
+        description: 'Place print order or prepare for web publication.',
+        deliverable: 'Order Form, Publication Readiness Report',
+        tips: ['Re-confirm deadline and quantity', 'Arrange delivery location', 'Inform stakeholders of publication date'],
+        checkpoints: ['Is order content accurate?', 'Is receiving arrangement ready?']
+      },
+      '校了/最終承認': {
+        description: 'Give final approval and sign off on the deliverable.',
+        deliverable: 'Final Approval Document',
+        tips: ['Final check by responsible person', 'No revisions in principle after approval', 'Record approval date'],
+        checkpoints: ['Have all approvers given consent?', 'Is it suitable for publication?']
+      },
+      '納品/公開': {
+        description: 'Deliver or publish the completed PR material.',
+        deliverable: 'Deliverables, Publication Completion Report',
+        tips: ['Inspect deliverables', 'Verify post-publication functionality', 'Report to stakeholders'],
+        checkpoints: ['Are deliverables problem-free?', 'Was publication done correctly?']
+      },
+      '配布/告知': {
+        description: 'Distribute PR materials and notify stakeholders.',
+        deliverable: 'Distribution Completion Report',
+        tips: ['Create distribution list', 'Confirm distribution method', 'Consider SNS announcements'],
+        checkpoints: ['Was distribution completed as planned?', 'Is feedback being recorded?']
+      },
+      '振り返り/ナレッジ整理': {
+        description: 'Reflect on the entire project and organize learnings.',
+        deliverable: 'Retrospective Report',
+        tips: ['Include both positives and areas for improvement', 'Record in a form useful for next time', 'Share with team'],
+        checkpoints: ['Are reflection points clear?', 'Are next actions decided?']
+      }
+    };
+
+    // 依存関係データ
+    const TASK_DEPENDENCIES = {};
+    Object.entries(TASK_GUIDANCE).forEach(([taskName, data]) => {
+      if (data.dependencies && data.dependencies.length > 0) {
+        TASK_DEPENDENCIES[taskName] = data.dependencies;
+      }
+    });
+
+    // タスクセルから純粋なタスク名（日本語）を取得するヘルパー
+    function getTaskNameJa(taskCell) {
+      // data-text-ja があればそちらを使用（最も信頼性が高い）
+      if (taskCell.dataset.textJa) return taskCell.dataset.textJa;
+      // なければボタン・警告を除いたテキストを取得
+      const clone = taskCell.cloneNode(true);
+      clone.querySelectorAll('.task-info-btn, .dependency-warning').forEach(el => el.remove());
+      return clone.textContent.trim();
+    }
+
+    // 依存関係チェック
+    function checkDependencies() {
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const taskCell = row.querySelector('td:nth-child(2)');
+        if (!taskCell) return;
+
+        const taskNameJa = getTaskNameJa(taskCell);
+        const deps = TASK_DEPENDENCIES[taskNameJa];
+        const existingWarning = taskCell.querySelector('.dependency-warning');
+        if (existingWarning) existingWarning.remove();
+
+        if (!deps || deps.length === 0) return;
+
+        const status = row.querySelector('.workflow-status')?.value;
+        if (status === 'done') return; // 完了済みは警告不要
+
+        const blockers = deps.filter(depName => {
+          const depRow = findRowByTaskName(depName);
+          return depRow && depRow.querySelector('.workflow-status')?.value !== 'done';
+        });
+
+        if (blockers.length > 0) {
+          // 表示用のブロッカー名（英語モード時は翻訳）
+          const displayBlockers = blockers.map(name =>
+            lang === 'en' ? (workflowTranslations.tasks[name] || name) : name
+          );
+          const warning = document.createElement('span');
+          warning.className = 'dependency-warning';
+          warning.textContent = lang === 'ja'
+            ? `⚠ 先行タスク未完了: ${displayBlockers.join(', ')}`
+            : `⚠ Blocked by: ${displayBlockers.join(', ')}`;
+          taskCell.appendChild(warning);
+        }
+      });
+    }
+
+    function findRowByTaskName(taskNameJa) {
+      const rows = document.querySelectorAll('.workflow-row');
+      for (const row of rows) {
+        const cell = row.querySelector('td:nth-child(2)');
+        if (cell && getTaskNameJa(cell) === taskNameJa) {
+          return row;
+        }
+      }
+      return null;
+    }
+
+    // モーダル表示
+    function showModal(title, content) {
+      const modal = document.getElementById('guidanceModal');
+      if (!modal) return;
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').innerHTML = content;
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('guidanceModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // タスクガイダンス表示
+    function showTaskGuidance(taskName) {
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const guidanceJa = TASK_GUIDANCE[taskName];
+      const guidanceEn = TASK_GUIDANCE_EN[taskName];
+
+      if (!guidanceJa) {
+        showModal(taskName, lang === 'ja' ? '<p>このタスクのガイダンスは準備中です。</p>' : '<p>Guidance for this task is not available.</p>');
+        return;
+      }
+
+      // 言語に応じたデータソースを選択（英語データがない場合は日本語にフォールバック）
+      const g = (lang === 'en' && guidanceEn) ? guidanceEn : guidanceJa;
+
+      const content = `
+        <h4>${lang === 'ja' ? 'タスクの目的' : 'Purpose'}</h4>
+        <p>${g.description}</p>
+        <h4>${lang === 'ja' ? '成果物' : 'Deliverable'}</h4>
+        <p>${g.deliverable}</p>
+        <h4>${lang === 'ja' ? 'ヒント' : 'Tips'}</h4>
+        <ul>${g.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+        <h4>${lang === 'ja' ? '完了チェックポイント' : 'Completion Checklist'}</h4>
+        <ul>${g.checkpoints.map(c => `<li>${c}</li>`).join('')}</ul>
+        ${guidanceJa.dependencies.length > 0 ? `
+          <h4>${lang === 'ja' ? '前提タスク' : 'Prerequisites'}</h4>
+          <p>${guidanceJa.dependencies.join(', ')}</p>
+        ` : ''}
+      `;
+      showModal(taskName, content);
+    }
+
+    // 差し戻し理由入力
+    function showBackReasonModal(row) {
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const title = lang === 'ja' ? '差し戻し理由を入力' : 'Enter reason for sending back';
+      const content = `
+        <p>${lang === 'ja' ? '差し戻しの理由を入力してください。備考欄に記録されます。' : 'Please enter the reason. It will be recorded in the notes.'}</p>
+        <textarea id="backReasonInput" style="width:100%;min-height:80px;margin-top:12px;" placeholder="${lang === 'ja' ? '例: 写真の解像度が不足しています' : 'e.g., Image resolution is insufficient'}"></textarea>
+        <div style="margin-top:16px;text-align:right;">
+          <button class="btn btn-secondary" onclick="closeModal()">${lang === 'ja' ? 'キャンセル' : 'Cancel'}</button>
+          <button class="btn btn-primary" onclick="applyBackReason()" style="margin-left:8px;">${lang === 'ja' ? '記録する' : 'Record'}</button>
+        </div>
+      `;
+      showModal(title, content);
+      window._currentBackRow = row;
+    }
+
+    function applyBackReason() {
+      const row = window._currentBackRow;
+      if (!row) return;
+
+      const reason = document.getElementById('backReasonInput')?.value?.trim();
+      if (reason) {
+        const notes = row.querySelector('td:nth-child(6) textarea');
+        if (notes) {
+          const timestamp = new Date().toLocaleString('ja-JP');
+          const newNote = `[${timestamp} 差し戻し] ${reason}`;
+          notes.value = newNote + (notes.value ? '\n' + notes.value : '');
+        }
+      }
+      closeModal();
+      window._currentBackRow = null;
+    }
+
+    // 状態変更ハンドラ（差し戻し時のモーダル表示）
+    function onStatusChange(select) {
+      const newStatus = select.value;
+      const row = select.closest('.workflow-row');
+
+      // 変更履歴ログ
+      const taskCell = row.querySelector('td:nth-child(2)');
+      const taskName = taskCell?.textContent?.replace('?', '').trim() || '';
+      logChange(taskName, 'status', select.dataset.prevStatus || '', newStatus);
+      select.dataset.prevStatus = newStatus;
+
+      if (newStatus === 'back') {
+        showBackReasonModal(row);
+      }
+
+      updateProgress();
+      applyWorkflowFilters();
+    }
+
+    // 変更履歴ログ
+    function logChange(taskName, field, oldValue, newValue) {
+      if (oldValue === newValue) return;
+
+      const log = JSON.parse(localStorage.getItem('prWorkflowChangeLog') || '[]');
+      log.unshift({
+        timestamp: new Date().toISOString(),
+        task: taskName,
+        field: field,
+        from: oldValue,
+        to: newValue
+      });
+      // 最新100件のみ保持
+      if (log.length > 100) log.pop();
+      localStorage.setItem('prWorkflowChangeLog', JSON.stringify(log));
+    }
+
+    // 変更履歴表示
+    function showChangeLog() {
+      const log = JSON.parse(localStorage.getItem('prWorkflowChangeLog') || '[]');
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+
+      if (log.length === 0) {
+        showModal(
+          lang === 'ja' ? '変更履歴' : 'Change Log',
+          `<p style="color:var(--gray-500);text-align:center;">${lang === 'ja' ? '変更履歴はありません' : 'No change history'}</p>`
+        );
+        return;
+      }
+
+      const statusLabels = {
+        todo: lang === 'ja' ? '未着手' : 'Not Started',
+        doing: lang === 'ja' ? '進行中' : 'In Progress',
+        review: lang === 'ja' ? 'レビュー待ち' : 'Review',
+        back: lang === 'ja' ? '差し戻し' : 'Back',
+        done: lang === 'ja' ? '完了' : 'Done'
+      };
+
+      const content = log.slice(0, 50).map(entry => {
+        const date = new Date(entry.timestamp);
+        const timeStr = date.toLocaleString('ja-JP');
+        const fromLabel = statusLabels[entry.from] || entry.from || '-';
+        const toLabel = statusLabels[entry.to] || entry.to;
+        return `
+          <div class="change-log-item">
+            <div class="change-log-time">${timeStr}</div>
+            <div class="change-log-task">${entry.task}</div>
+            <div class="change-log-detail">${fromLabel} → ${toLabel}</div>
+          </div>
+        `;
+      }).join('');
+
+      showModal(lang === 'ja' ? '変更履歴（最新50件）' : 'Change Log (Latest 50)', content);
+    }
+
+    // タスク名セルにガイダンスボタンを追加
+    function addGuidanceButtons() {
+      document.querySelectorAll('.workflow-row').forEach(row => {
+        const taskCell = row.querySelector('td:nth-child(2)');
+        if (!taskCell || taskCell.querySelector('.task-info-btn')) return;
+
+        const taskName = taskCell.textContent.trim();
+        if (!taskName || taskCell.querySelector('input')) return; // 入力欄がある場合はスキップ
+
+        const btn = document.createElement('button');
+        btn.className = 'task-info-btn';
+        btn.type = 'button';
+        btn.textContent = '?';
+        btn.title = document.body.getAttribute('data-lang') === 'ja' ? 'ガイダンスを表示' : 'Show guidance';
+        btn.onclick = () => showTaskGuidance(taskName);
+        taskCell.appendChild(btn);
+      });
+    }
+
+    // 状態選択にイベントハンドラを設定
+    function setupStatusHandlers() {
+      document.querySelectorAll('.workflow-status').forEach(select => {
+        if (select.dataset.handlerSet) return;
+        select.dataset.handlerSet = 'true';
+        select.dataset.prevStatus = select.value;
+        // 既存のonchange属性を削除してイベントリスナーに統一
+        select.removeAttribute('onchange');
+        select.addEventListener('change', function() {
+          onStatusChange(this);
+        });
+      });
+    }
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', () => {
+      // 保存された言語設定を読み込み
+      const savedLang = localStorage.getItem('prWorkflowLang') || 'ja';
+      document.body.setAttribute('data-lang', savedLang);
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(savedLang === 'ja' ? '日本語' : 'English'));
+      });
+      updatePlaceholders(savedLang);
+
+      // クイックスタートの初回表示
+      const firstRun = localStorage.getItem('prWorkflowFirstRun');
+      if (firstRun === null) {
+        showQuickStart();
+      }
+
+      // 締めくくり質問の初期化
+      const closingQ = document.getElementById('closingQuestion');
+      if (closingQ) {
+        closingQ.value = savedLang === 'ja'
+          ? '他に伝えておきたいことはありますか？'
+          : 'Is there anything else you would like to share?';
+      }
+
+      // 必須入力の監視
+      document.querySelectorAll('[data-required="true"]').forEach(field => {
+        field.addEventListener('input', updateRequiredState);
+        field.addEventListener('change', updateRequiredState);
+      });
+
+      loadData();
+      updateProgress();
+      updateRequiredState();
+      applyWorkflowFilters();
+      enableWorkflowDrag();
+      addGuidanceButtons();
+      setupStatusHandlers();
+      if (!document.querySelector('.interviewee-card')) {
+        addInterviewee();
+      }
+      setInterviewType('direct');
+
+      // 担当者変更時にも作業量を更新
+      document.querySelectorAll('.workflow-assignee').forEach(input => {
+        input.addEventListener('change', updateAssigneeWorkload);
+        input.addEventListener('input', updateAssigneeWorkload);
+      });
+
+      // 期限変更時に警告をチェック
+      document.querySelectorAll('.workflow-table input[type="date"]').forEach(input => {
+        input.addEventListener('change', checkDeadlines);
+      });
+    });
+  </script>
+</body>
+</html>
