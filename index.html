@@ -5066,9 +5066,23 @@ Result:"></textarea>
 
     // タスクガイダンス表示
     function showTaskGuidance(taskName) {
+      console.log('[DEBUG showTaskGuidance] taskName:', JSON.stringify(taskName), 'found:', !!TASK_GUIDANCE[taskName]);
       const lang = document.body.getAttribute('data-lang') || 'ja';
-      const guidanceJa = TASK_GUIDANCE[taskName];
-      const guidanceEn = TASK_GUIDANCE_EN[taskName];
+
+      // 完全一致を試みた後、部分一致でフォールバック
+      let lookupKey = taskName;
+      if (!TASK_GUIDANCE[lookupKey]) {
+        // 「?」やスペースの付着を除去して再試行
+        lookupKey = taskName.replace(/\?/g, '').trim();
+      }
+      if (!TASK_GUIDANCE[lookupKey]) {
+        // TASK_GUIDANCEのキーに含まれるか部分一致チェック
+        const matchedKey = Object.keys(TASK_GUIDANCE).find(k => k === lookupKey || lookupKey.includes(k) || k.includes(lookupKey));
+        if (matchedKey) lookupKey = matchedKey;
+      }
+
+      const guidanceJa = TASK_GUIDANCE[lookupKey];
+      const guidanceEn = TASK_GUIDANCE_EN[lookupKey];
 
       if (!guidanceJa) {
         showModal(taskName, lang === 'ja' ? '<p>このタスクのガイダンスは準備中です。</p>' : '<p>Guidance for this task is not available.</p>');
@@ -5204,11 +5218,22 @@ Result:"></textarea>
 
     // タスク名セルにガイダンスボタンを追加
     function addGuidanceButtons() {
-      document.querySelectorAll('.workflow-row').forEach(row => {
+      console.log('[DEBUG addGuidanceButtons] Starting...');
+      document.querySelectorAll('.workflow-row').forEach((row, i) => {
         const taskCell = row.querySelector('td:nth-child(2)');
         if (!taskCell || taskCell.querySelector('.task-info-btn')) return;
 
-        const taskName = taskCell.textContent.trim();
+        // タスク名は data-text-ja 属性を優先し、なければ textContent から取得
+        let taskName = taskCell.dataset.textJa || '';
+        if (!taskName) {
+          // ボタンや警告を除いた純粋なテキストを取得
+          const clone = taskCell.cloneNode(true);
+          clone.querySelectorAll('.task-info-btn, .dependency-warning').forEach(el => el.remove());
+          taskName = clone.textContent.trim();
+          // 取得した日本語名を data 属性に保存（今後の参照用）
+          if (taskName) taskCell.dataset.textJa = taskName;
+        }
+        console.log('[DEBUG addGuidanceButtons] Row', i, 'taskName:', JSON.stringify(taskName), 'inGuidance:', !!TASK_GUIDANCE[taskName]);
         if (!taskName || taskCell.querySelector('input')) return; // 入力欄がある場合はスキップ
 
         const btn = document.createElement('button');
