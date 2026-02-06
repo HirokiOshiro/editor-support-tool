@@ -411,19 +411,555 @@
       border-left: 3px solid #22c55e;
     }
 
+    /* ============================== */
+    /* ビュー切替ボタン               */
+    /* ============================== */
+    .view-switcher {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      background: var(--gray-100);
+      padding: 4px;
+      border-radius: 8px;
+      width: fit-content;
+    }
+    .view-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      transition: all 0.2s;
+    }
+    .view-btn:hover {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+    .view-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      font-weight: 600;
+    }
+    .view-btn svg { flex-shrink: 0; }
+
+    /* ============================== */
+    /* カンバンビュー                 */
+    /* ============================== */
+    .kanban-view {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      min-height: 400px;
+    }
+    .kanban-column {
+      flex: 0 0 260px;
+      min-width: 260px;
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      max-height: 75vh;
+    }
+    .kanban-column-header {
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .kanban-column-header .count-badge {
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .kanban-column[data-status="todo"] .kanban-column-header {
+      background: var(--gray-200); color: var(--gray-700);
+    }
+    .kanban-column[data-status="doing"] .kanban-column-header {
+      background: #fde68a; color: #92400e;
+    }
+    .kanban-column[data-status="review"] .kanban-column-header {
+      background: #bfdbfe; color: #1e40af;
+    }
+    .kanban-column[data-status="back"] .kanban-column-header {
+      background: #fecaca; color: #991b1b;
+    }
+    .kanban-column[data-status="done"] .kanban-column-header {
+      background: #bbf7d0; color: #166534;
+    }
+    .kanban-column-body {
+      padding: 8px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .kanban-card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .kanban-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+    .kanban-card .card-phase {
+      font-size: 0.7rem;
+      color: var(--gray-500);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kanban-card .card-task {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .kanban-card .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      flex-wrap: wrap;
+    }
+    .kanban-card .card-meta .meta-assignee {
+      background: var(--gray-100);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .kanban-card .card-meta .meta-due {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .kanban-card .card-meta .meta-due.overdue {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .kanban-card .card-meta .meta-due.due-soon {
+      color: #d97706;
+    }
+    .kanban-card .card-notes {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      white-space: pre-line;
+      max-height: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kanban-card[data-status="doing"]  { border-left-color: #f59e0b; }
+    .kanban-card[data-status="review"] { border-left-color: #3b82f6; }
+    .kanban-card[data-status="back"]   { border-left-color: #ef4444; }
+    .kanban-card[data-status="done"]   { border-left-color: #22c55e; }
+    .kanban-empty {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.8rem;
+      padding: 20px 0;
+    }
+
+    /* ============================== */
+    /* ガントチャートビュー（Notion風） */
+    /* ================================ */
+    .gantt-view {
+      overflow: hidden;
+      padding-bottom: 12px;
+    }
+    .gantt-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px 8px 0 0;
+      flex-wrap: wrap;
+    }
+    .gantt-tool-btn {
+      font-size: 0.78rem;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .gantt-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 0.72rem;
+      color: var(--gray-600);
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+    .gantt-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gantt-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .gantt-container {
+      display: flex;
+      min-width: 900px;
+      border: 1px solid var(--gray-200);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+    }
+    .gantt-labels {
+      flex: 0 0 260px;
+      min-width: 260px;
+      border-right: 2px solid var(--gray-300);
+      position: sticky;
+      left: 0;
+      background: white;
+      z-index: 5;
+    }
+    .gantt-labels .gantt-label-header {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-700);
+    }
+    /* フェーズヘッダー行 */
+    .gantt-label-row.gantt-phase-header {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: #eef4ff;
+      border-bottom: 1px solid var(--gray-200);
+      gap: 8px;
+      cursor: default;
+    }
+    .label-phase-group {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .label-phase-count {
+      font-size: 0.65rem;
+      color: var(--gray-500);
+      background: var(--gray-200);
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+    /* タスク行 */
+    .gantt-label-row.gantt-task-row {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 24px;
+      font-size: 0.76rem;
+      border-bottom: 1px solid var(--gray-100);
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .gantt-label-row.gantt-task-row:hover,
+    .gantt-label-row.gantt-hover {
+      background: #f0f4ff;
+    }
+    .gantt-label-row .label-task {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--gray-800);
+    }
+    .gantt-label-row .label-assignee {
+      flex: 0 0 auto;
+      font-size: 0.65rem;
+      color: var(--gray-500);
+      background: var(--gray-100);
+      padding: 1px 6px;
+      border-radius: 4px;
+      max-width: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .gantt-label-row .label-status {
+      flex: 0 0 auto;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .gantt-label-row .label-status[data-s="todo"]   { background: var(--gray-300); }
+    .gantt-label-row .label-status[data-s="doing"]  { background: #f59e0b; }
+    .gantt-label-row .label-status[data-s="review"] { background: #3b82f6; }
+    .gantt-label-row .label-status[data-s="back"]   { background: #ef4444; }
+    .gantt-label-row .label-status[data-s="done"]   { background: #22c55e; }
+    .gantt-timeline {
+      flex: 1;
+      overflow-x: auto;
+      position: relative;
+      scrollbar-width: thin;
+    }
+    .gantt-timeline::-webkit-scrollbar {
+      height: 8px;
+    }
+    .gantt-timeline::-webkit-scrollbar-thumb {
+      background: var(--gray-300);
+      border-radius: 4px;
+    }
+    .gantt-timeline-header {
+      display: flex;
+      flex-direction: column;
+      height: 54px;
+      border-bottom: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+    .gantt-day-header {
+      flex: 0 0 36px;
+      min-width: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.62rem;
+      color: var(--gray-500);
+      border-right: 1px solid var(--gray-100);
+      user-select: none;
+    }
+    .gantt-day-header .day-num {
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--gray-700);
+      line-height: 1;
+    }
+    .gantt-day-header .day-name {
+      font-size: 0.58rem;
+      color: var(--gray-400);
+      margin-top: 1px;
+    }
+    .gantt-day-header.today {
+      background: #dbeafe;
+    }
+    .gantt-day-header.today .day-num {
+      color: var(--primary);
+      font-weight: 800;
+    }
+    .gantt-day-header.today .day-name {
+      color: var(--primary);
+    }
+    .gantt-day-header.weekend {
+      background: #fef2f2;
+    }
+    .gantt-day-header.weekend .day-num {
+      color: #ef4444;
+    }
+    /* フェーズ行（タイムライン） */
+    .gantt-row.gantt-row-phase {
+      height: 32px;
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      position: relative;
+      background: #f8faff;
+    }
+    /* タスク行（タイムライン） */
+    .gantt-row.gantt-row-task {
+      height: 36px;
+      display: flex;
+      border-bottom: 1px solid var(--gray-100);
+      position: relative;
+      transition: background 0.12s;
+    }
+    .gantt-row.gantt-row-task:hover,
+    .gantt-row.gantt-hover {
+      background: #f0f4ff;
+    }
+    .gantt-cell {
+      flex: 0 0 36px;
+      min-width: 36px;
+      border-right: 1px solid var(--gray-50);
+      position: relative;
+      cursor: crosshair;
+    }
+    .gantt-cell:hover {
+      background: rgba(37,99,235,0.06) !important;
+    }
+    .gantt-cell.weekend { background: #fef2f2; opacity: 0.5; }
+    .gantt-cell.today { background: #eff6ff; }
+    /* ガントバー */
+    .gantt-bar {
+      position: absolute;
+      top: 5px;
+      height: 26px;
+      border-radius: 6px;
+      z-index: 2;
+      min-width: 32px;
+      display: flex;
+      align-items: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: white;
+      cursor: grab;
+      transition: box-shadow 0.15s, transform 0.08s;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .gantt-bar:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+      z-index: 4;
+    }
+    .gantt-bar.gantt-bar-dragging {
+      cursor: grabbing;
+      opacity: 0.85;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 10;
+    }
+    .gantt-bar[data-status="todo"]   { background: linear-gradient(135deg, var(--gray-400), var(--gray-500)); }
+    .gantt-bar[data-status="doing"]  { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .gantt-bar[data-status="review"] { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .gantt-bar[data-status="back"]   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .gantt-bar[data-status="done"]   { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    /* バー内進捗バー */
+    .gantt-bar-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px 0 0 6px;
+      pointer-events: none;
+      transition: width 0.3s;
+    }
+    /* バー内ラベル */
+    .gantt-bar-label {
+      position: relative;
+      z-index: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    /* リサイズハンドル */
+    .gantt-bar-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: col-resize;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .gantt-bar:hover .gantt-bar-handle {
+      opacity: 1;
+    }
+    .gantt-bar-handle-left {
+      left: 0;
+      border-radius: 6px 0 0 6px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.5), transparent);
+    }
+    .gantt-bar-handle-right {
+      right: 0;
+      border-radius: 0 6px 6px 0;
+      background: linear-gradient(270deg, rgba(255,255,255,0.5), transparent);
+    }
+    .gantt-bar-handle:hover {
+      background: rgba(255,255,255,0.6);
+    }
+    /* 今日の線 */
+    .gantt-today-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--primary);
+      z-index: 6;
+      pointer-events: none;
+    }
+    .gantt-today-line::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      width: 10px;
+      height: 10px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .gantt-no-dates {
+      padding: 48px;
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 0.92rem;
+    }
+    .gantt-month-header {
+      position: absolute;
+      top: 2px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      padding: 2px 8px;
+      white-space: nowrap;
+      background: var(--gray-50);
+    }
+
+    /* ============================== */
+    /* 印刷時は全ビュー非表示制御    */
+    /* ============================== */
+    @media print {
+      .view-switcher { display: none !important; }
+      .kanban-view { display: none !important; }
+      .gantt-view { display: none !important; }
+    }
+
     /* 期限超過警告 */
-    .workflow-row.overdue td:nth-child(4) {
+    .workflow-row.overdue td:nth-child(5) {
       color: #dc2626;
       font-weight: bold;
     }
-    .workflow-row.overdue td:nth-child(4) input {
+    .workflow-row.overdue td:nth-child(5) input {
       border-color: #dc2626;
       background: #fef2f2;
     }
-    .workflow-row.due-soon td:nth-child(4) {
+    .workflow-row.due-soon td:nth-child(5) {
       color: #d97706;
     }
-    .workflow-row.due-soon td:nth-child(4) input {
+    .workflow-row.due-soon td:nth-child(5) input {
       border-color: #d97706;
       background: #fffbeb;
     }
@@ -1506,9 +2042,27 @@
       </div>
       <div class="section">
         <h2>
-          <span class="lang-ja">工程表（テーブル）</span>
-          <span class="lang-en">Workflow Table</span>
+          <span class="lang-ja">工程表</span>
+          <span class="lang-en">Workflow</span>
         </h2>
+        <!-- ビュー切替 -->
+        <div class="view-switcher">
+          <button class="view-btn active" data-view="table" onclick="switchWorkflowView('table', this)" title="テーブル">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2h16v2H0V2zm0 4h16v2H0V6zm0 4h16v2H0v-2zm0 4h16v2H0v-2z"/></svg>
+            <span class="lang-ja">テーブル</span>
+            <span class="lang-en">Table</span>
+          </button>
+          <button class="view-btn" data-view="kanban" onclick="switchWorkflowView('kanban', this)" title="カンバン">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 1h4v14H1V1zm5 0h4v10H6V1zm5 0h4v12h-4V1z"/></svg>
+            <span class="lang-ja">カンバン</span>
+            <span class="lang-en">Kanban</span>
+          </button>
+          <button class="view-btn" data-view="gantt" onclick="switchWorkflowView('gantt', this)" title="ガントチャート">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1h16v2H0V1zm2 4h8v2H2V5zm4 4h10v2H6V9zm1 4h6v2H7v-2z"/></svg>
+            <span class="lang-ja">ガントチャート</span>
+            <span class="lang-en">Gantt</span>
+          </button>
+        </div>
         <div class="workflow-filters">
           <input type="text" id="workflowAssigneeFilter" data-placeholder-ja="担当者で絞り込み" data-placeholder-en="Filter by assignee" oninput="applyWorkflowFilters()">
           <select id="workflowStatusFilter" onchange="applyWorkflowFilters()">
@@ -1530,7 +2084,8 @@
               <th><span class="lang-ja">フェーズ</span><span class="lang-en">Phase</span></th>
               <th><span class="lang-ja">タスク</span><span class="lang-en">Task</span></th>
               <th><span class="lang-ja">担当者</span><span class="lang-en">Assignee</span></th>
-              <th><span class="lang-ja">期限</span><span class="lang-en">Due</span></th>
+              <th><span class="lang-ja">開始日</span><span class="lang-en">Start</span></th>
+              <th><span class="lang-ja">完了予定日</span><span class="lang-en">End</span></th>
               <th><span class="lang-ja">状態</span><span class="lang-en">Status</span></th>
               <th><span class="lang-ja">備考</span><span class="lang-en">Notes</span></th>
               <th class="actions"><span class="lang-ja">操作</span><span class="lang-en">Actions</span></th>
@@ -1541,7 +2096,7 @@
               <td>企画・構成</td>
               <td>目的/ゴールの明確化</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1558,7 +2113,7 @@
               <td>企画・構成</td>
               <td>ターゲット/ペルソナ設定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1575,7 +2130,7 @@
               <td>企画・構成</td>
               <td>競合/類似物調査</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1592,7 +2147,7 @@
               <td>企画・構成</td>
               <td>コアメッセージ決定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1609,7 +2164,7 @@
               <td>企画・構成</td>
               <td>構成案/台割作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1626,7 +2181,7 @@
               <td>企画・構成</td>
               <td>スケジュール/予算確定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1643,7 +2198,7 @@
               <td>企画・構成</td>
               <td>企画承認</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1660,7 +2215,7 @@
               <td>取材・素材</td>
               <td>取材対象者リスト作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1677,7 +2232,7 @@
               <td>取材・素材</td>
               <td>取材質問設計</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1694,7 +2249,7 @@
               <td>取材・素材</td>
               <td>取材アポイント調整</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1711,7 +2266,7 @@
               <td>取材・素材</td>
               <td>取材実施/記録</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1728,7 +2283,7 @@
               <td>取材・素材</td>
               <td>文字起こし/記録整理</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1745,7 +2300,7 @@
               <td>取材・素材</td>
               <td>写真/素材撮影・収集</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1762,7 +2317,7 @@
               <td>取材・素材</td>
               <td>素材の不足確認/追加入手</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1779,7 +2334,7 @@
               <td>原稿作成</td>
               <td>初稿執筆</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1796,7 +2351,7 @@
               <td>原稿作成</td>
               <td>キャッチ/見出し案作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1813,7 +2368,7 @@
               <td>原稿作成</td>
               <td>内部レビュー（文章）</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1830,7 +2385,7 @@
               <td>原稿作成</td>
               <td>修正/第2稿作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1847,7 +2402,7 @@
               <td>原稿作成</td>
               <td>対象者/関係者確認</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1864,7 +2419,7 @@
               <td>原稿作成</td>
               <td>原稿確定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1881,7 +2436,7 @@
               <td>編集・組版</td>
               <td>デザインコンセプト決定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1898,7 +2453,7 @@
               <td>編集・組版</td>
               <td>ラフレイアウト作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1915,7 +2470,7 @@
               <td>編集・組版</td>
               <td>写真/図版選定・配置</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1932,7 +2487,7 @@
               <td>編集・組版</td>
               <td>初稿組版作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1949,7 +2504,7 @@
               <td>編集・組版</td>
               <td>内部レビュー（デザイン）</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1966,7 +2521,7 @@
               <td>編集・組版</td>
               <td>デザイン修正</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -1983,7 +2538,7 @@
               <td>編集・組版</td>
               <td>デザイン確定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2000,7 +2555,7 @@
               <td>校正1（初校）</td>
               <td>初校チェック</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2017,7 +2572,7 @@
               <td>校正1（初校）</td>
               <td>初校赤字反映</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2034,7 +2589,7 @@
               <td>校正2（再校）</td>
               <td>再校チェック</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2051,7 +2606,7 @@
               <td>校正2（再校）</td>
               <td>再校赤字反映</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2068,7 +2623,7 @@
               <td>校正3（三校）</td>
               <td>三校チェック</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2085,7 +2640,7 @@
               <td>校正3（三校）</td>
               <td>三校赤字反映</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2102,7 +2657,7 @@
               <td>色校正</td>
               <td>色校正出し/確認</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2119,7 +2674,7 @@
               <td>色校正</td>
               <td>色校正戻し/確定</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2136,7 +2691,7 @@
               <td>入稿・公開</td>
               <td>入稿データ作成</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2153,7 +2708,7 @@
               <td>入稿・公開</td>
               <td>印刷発注/公開準備</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2170,7 +2725,7 @@
               <td>入稿・公開</td>
               <td>校了/最終承認</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2187,7 +2742,7 @@
               <td>入稿・公開</td>
               <td>納品/公開</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2204,7 +2759,7 @@
               <td>入稿・公開</td>
               <td>配布/告知</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2221,7 +2776,7 @@
               <td>入稿・公開</td>
               <td>振り返り/ナレッジ整理</td>
               <td><input type="text" class="workflow-assignee"></td>
-              <td><input type="date"></td>
+              <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
               <td>
                 <select class="workflow-status" onchange="updateProgress();applyWorkflowFilters();">
                   <option value="todo">未着手</option>
@@ -2236,12 +2791,18 @@
             </tr>
           </tbody>
         </table>
+        <!-- カンバンビュー -->
+        <div id="kanbanView" class="kanban-view" style="display:none;"></div>
+
+        <!-- ガントチャートビュー -->
+        <div id="ganttView" class="gantt-view" style="display:none;"></div>
+
         <template id="workflowRowTemplate">
           <tr class="workflow-row">
             <td><input type="text" data-placeholder-ja="フェーズ" data-placeholder-en="Phase"></td>
             <td><input type="text" data-placeholder-ja="タスク" data-placeholder-en="Task"></td>
             <td><input type="text" class="workflow-assignee"></td>
-            <td><input type="date"></td>
+            <td><input type="date" class="workflow-start-date"></td><td><input type="date" class="workflow-end-date"></td>
             <td>
               <select class="workflow-status">
                 <option value="todo" data-text-ja="未着手">未着手</option>
@@ -3013,6 +3574,12 @@ Result:"></textarea>
       // 依存関係の警告も言語に合わせて更新
       checkDependencies();
 
+      // カンバン/ガントビューが表示中なら再描画
+      if (typeof currentWorkflowView !== 'undefined') {
+        if (currentWorkflowView === 'kanban') renderKanbanView();
+        else if (currentWorkflowView === 'gantt') renderGanttView();
+      }
+
       // 言語設定を保存
       localStorage.setItem('prWorkflowLang', lang);
     }
@@ -3396,6 +3963,12 @@ Result:"></textarea>
       updatePhaseProgress();
       updateAssigneeWorkload();
       checkDependencies();
+
+      // カンバン/ガントビューが表示中なら再描画
+      if (typeof currentWorkflowView !== 'undefined') {
+        if (currentWorkflowView === 'kanban') renderKanbanView();
+        else if (currentWorkflowView === 'gantt') renderGanttView();
+      }
     }
 
     // 期限超過チェック
@@ -3411,7 +3984,7 @@ Result:"></textarea>
 
         if (status === 'done') return;
 
-        const dateInput = row.querySelector('input[type="date"]');
+        const dateInput = row.querySelector('.workflow-end-date');
         if (!dateInput?.value) return;
 
         const deadline = new Date(dateInput.value);
@@ -3590,10 +4163,9 @@ Result:"></textarea>
           assigneeInput.addEventListener('input', updateAssigneeWorkload);
         }
         // 期限変更時の警告チェック
-        const dateInput = lastRow.querySelector('input[type="date"]');
-        if (dateInput) {
-          dateInput.addEventListener('change', checkDeadlines);
-        }
+        lastRow.querySelectorAll('.workflow-start-date, .workflow-end-date').forEach(dateInput => {
+          dateInput.addEventListener('change', () => { checkDeadlines(); updateProgress(); });
+        });
       }
 
       applyWorkflowFilters();
@@ -4545,7 +5117,7 @@ Result:"></textarea>
 
       const reason = document.getElementById('backReasonInput')?.value?.trim();
       if (reason) {
-        const notes = row.querySelector('td:nth-child(6) textarea');
+        const notes = row.querySelector('td:nth-child(7) textarea');
         if (notes) {
           const timestamp = new Date().toLocaleString('ja-JP');
           const newNote = `[${timestamp} 差し戻し] ${reason}`;
@@ -4663,6 +5235,606 @@ Result:"></textarea>
       });
     }
 
+    // ============================
+    // ビュー切替・カンバン・ガントチャート
+    // ============================
+    let currentWorkflowView = 'table';
+
+    function switchWorkflowView(view, btn) {
+      currentWorkflowView = view;
+      // ボタンのアクティブ状態を更新
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const tableEl = document.querySelector('.workflow-table');
+      const kanbanEl = document.getElementById('kanbanView');
+      const ganttEl = document.getElementById('ganttView');
+      const filtersEl = document.querySelector('.workflow-filters');
+
+      if (view === 'table') {
+        tableEl.style.display = '';
+        kanbanEl.style.display = 'none';
+        ganttEl.style.display = 'none';
+        if (filtersEl) filtersEl.style.display = '';
+      } else if (view === 'kanban') {
+        tableEl.style.display = 'none';
+        kanbanEl.style.display = 'flex';
+        ganttEl.style.display = 'none';
+        if (filtersEl) filtersEl.style.display = 'none';
+        renderKanbanView();
+      } else if (view === 'gantt') {
+        tableEl.style.display = 'none';
+        kanbanEl.style.display = 'none';
+        ganttEl.style.display = 'block';
+        if (filtersEl) filtersEl.style.display = 'none';
+        renderGanttView();
+      }
+    }
+
+    // テーブルの行からタスクデータを収集
+    function collectWorkflowData() {
+      const rows = document.querySelectorAll('.workflow-row');
+      const tasks = [];
+      rows.forEach((row, idx) => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 7) return;
+        const phaseCell = cells[0];
+        const taskCell = cells[1];
+        const phase = (phaseCell.dataset.textJa || phaseCell.textContent.replace('≡', '').trim());
+        const taskName = getTaskNameJa(taskCell);
+        const assignee = row.querySelector('.workflow-assignee')?.value?.trim() || '';
+        const startDateInput = row.querySelector('.workflow-start-date');
+        const endDateInput = row.querySelector('.workflow-end-date');
+        const startDate = startDateInput?.value || '';
+        const endDate = endDateInput?.value || '';
+        const status = row.querySelector('.workflow-status')?.value || 'todo';
+        const notesEl = cells[6]?.querySelector('textarea');
+        const notes = notesEl?.value?.trim() || '';
+        tasks.push({ idx, phase, task: taskName, assignee, startDate, endDate, status, notes, row });
+      });
+      return tasks;
+    }
+
+    // ============ カンバンビュー ============
+    function renderKanbanView() {
+      const container = document.getElementById('kanbanView');
+      if (!container) return;
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const tasks = collectWorkflowData();
+
+      const statusConfig = [
+        { key: 'todo',   labelJa: '未着手',       labelEn: 'Not Started' },
+        { key: 'doing',  labelJa: '進行中',       labelEn: 'In Progress' },
+        { key: 'review', labelJa: 'レビュー待ち', labelEn: 'In Review'   },
+        { key: 'back',   labelJa: '差し戻し',     labelEn: 'Returned'    },
+        { key: 'done',   labelJa: '完了',         labelEn: 'Done'        }
+      ];
+
+      const today = new Date(); today.setHours(0,0,0,0);
+      const soonDate = new Date(today); soonDate.setDate(soonDate.getDate() + 3);
+
+      const phaseTranslate = (p) => lang === 'en' ? (workflowTranslations.phases[p] || p) : p;
+      const taskTranslate = (t) => lang === 'en' ? (workflowTranslations.tasks[t] || t) : t;
+
+      container.innerHTML = statusConfig.map(sc => {
+        const items = tasks.filter(t => t.status === sc.key);
+        const label = lang === 'ja' ? sc.labelJa : sc.labelEn;
+
+        const cardsHtml = items.length > 0 ? items.map(item => {
+          let dueClass = '';
+          let dateLabel = '';
+          if (item.startDate && item.endDate) {
+            dateLabel = `${item.startDate} → ${item.endDate}`;
+          } else if (item.endDate) {
+            dateLabel = item.endDate;
+          } else if (item.startDate) {
+            dateLabel = `${item.startDate} →`;
+          }
+          if (item.endDate && item.status !== 'done') {
+            const d = new Date(item.endDate); d.setHours(0,0,0,0);
+            if (d < today) dueClass = 'overdue';
+            else if (d <= soonDate) dueClass = 'due-soon';
+          }
+          return `
+            <div class="kanban-card" data-status="${item.status}" data-idx="${item.idx}" onclick="kanbanCardClick(${item.idx})">
+              <div class="card-phase">${phaseTranslate(item.phase)}</div>
+              <div class="card-task">${taskTranslate(item.task)}</div>
+              <div class="card-meta">
+                ${item.assignee ? `<span class="meta-assignee">${item.assignee}</span>` : ''}
+                ${dateLabel ? `<span class="meta-due ${dueClass}">📅 ${dateLabel}</span>` : ''}
+              </div>
+              ${item.notes ? `<div class="card-notes">${item.notes.substring(0, 80)}</div>` : ''}
+            </div>
+          `;
+        }).join('') : `<div class="kanban-empty">${lang === 'ja' ? 'タスクなし' : 'No tasks'}</div>`;
+
+        return `
+          <div class="kanban-column" data-status="${sc.key}">
+            <div class="kanban-column-header">
+              <span>${label}</span>
+              <span class="count-badge">${items.length}</span>
+            </div>
+            <div class="kanban-column-body">
+              ${cardsHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      setupKanbanDragDrop();
+    }
+
+    function kanbanCardClick(idx) {
+      const btn = document.querySelector('.view-btn[data-view="table"]');
+      switchWorkflowView('table', btn);
+      const rows = document.querySelectorAll('.workflow-row');
+      if (rows[idx]) {
+        rows[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        rows[idx].style.transition = 'background 0.3s';
+        rows[idx].style.background = '#fef9c3';
+        setTimeout(() => { rows[idx].style.background = ''; }, 2000);
+      }
+    }
+
+    function setupKanbanDragDrop() {
+      const cards = document.querySelectorAll('.kanban-card');
+      cards.forEach(card => {
+        card.draggable = true;
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', card.dataset.idx);
+          card.style.opacity = '0.5';
+        });
+        card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+      });
+
+      const columns = document.querySelectorAll('.kanban-column-body');
+      columns.forEach(col => {
+        col.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          col.style.background = 'rgba(37,99,235,0.05)';
+        });
+        col.addEventListener('dragleave', () => {
+          col.style.background = '';
+        });
+        col.addEventListener('drop', (e) => {
+          e.preventDefault();
+          col.style.background = '';
+          const idx = parseInt(e.dataTransfer.getData('text/plain'));
+          const newStatus = col.closest('.kanban-column').dataset.status;
+          const rows = document.querySelectorAll('.workflow-row');
+          if (rows[idx]) {
+            const select = rows[idx].querySelector('.workflow-status');
+            if (select) {
+              const oldStatus = select.value;
+              select.value = newStatus;
+              const taskCell = rows[idx].querySelector('td:nth-child(2)');
+              const taskName = taskCell?.textContent?.replace('?', '').trim() || '';
+              logChange(taskName, 'status', oldStatus, newStatus);
+              select.dataset.prevStatus = newStatus;
+              if (newStatus === 'back') {
+                showBackReasonModal(rows[idx]);
+              }
+              updateProgress();
+            }
+          }
+          renderKanbanView();
+        });
+      });
+    }
+
+    // ============ ガントチャートビュー（Notion風全面改善） ============
+    let ganttDragState = null;
+
+    function renderGanttView() {
+      const container = document.getElementById('ganttView');
+      if (!container) return;
+      const lang = document.body.getAttribute('data-lang') || 'ja';
+      const tasks = collectWorkflowData();
+
+      // 日付範囲の計算
+      const allDates = [];
+      tasks.forEach(t => {
+        if (t.startDate) allDates.push(new Date(t.startDate));
+        if (t.endDate) allDates.push(new Date(t.endDate));
+      });
+      const today = new Date(); today.setHours(0,0,0,0);
+
+      if (allDates.length === 0) {
+        container.innerHTML = `<div class="gantt-no-dates">
+          <p>${lang === 'ja' ? '📅 ガントチャートを表示するには、タスクに開始日や完了予定日を設定してください。' : '📅 Set start/end dates on tasks to display the Gantt chart.'}</p>
+          <button class="btn btn-secondary" style="margin-top:12px;" onclick="switchWorkflowView('table', document.querySelector('.view-btn[data-view=\\'table\\']'))">
+            ${lang === 'ja' ? 'テーブルに戻る' : 'Back to Table'}
+          </button>
+        </div>`;
+        return;
+      }
+
+      let minDate = new Date(Math.min(...allDates, today));
+      let maxDate = new Date(Math.max(...allDates, today));
+      minDate.setDate(minDate.getDate() - 5);
+      maxDate.setDate(maxDate.getDate() + 14);
+      minDate.setHours(0,0,0,0);
+      maxDate.setHours(0,0,0,0);
+
+      const totalDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
+      const dayWidth = 36;
+
+      const phaseTranslate = (p) => lang === 'en' ? (workflowTranslations.phases[p] || p) : p;
+      const taskTranslate = (t) => lang === 'en' ? (workflowTranslations.tasks[t] || t) : t;
+      const statusLabelMap = {
+        todo: lang === 'ja' ? '未着手' : 'Todo',
+        doing: lang === 'ja' ? '進行中' : 'Doing',
+        review: lang === 'ja' ? 'レビュー' : 'Review',
+        back: lang === 'ja' ? '差し戻し' : 'Back',
+        done: lang === 'ja' ? '完了' : 'Done'
+      };
+
+      // --- ヘッダー ---
+      const dayHeaders = [];
+      const monthMarkers = [];
+      let lastMonth = -1;
+      const dayNames = lang === 'ja' ? ['日','月','火','水','木','金','土'] : ['S','M','T','W','T','F','S'];
+
+      for (let i = 0; i < totalDays; i++) {
+        const d = new Date(minDate); d.setDate(d.getDate() + i);
+        const dayNum = d.getDate();
+        const dow = d.getDay();
+        const isWeekend = dow === 0 || dow === 6;
+        const isToday = d.getTime() === today.getTime();
+
+        if (d.getMonth() !== lastMonth) {
+          const monthLabel = lang === 'ja'
+            ? `${d.getFullYear()}年${d.getMonth()+1}月`
+            : d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+          monthMarkers.push({ left: i * dayWidth, label: monthLabel });
+          lastMonth = d.getMonth();
+        }
+
+        dayHeaders.push(`<div class="gantt-day-header ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" data-day-index="${i}">
+          <span class="day-num">${dayNum}</span>
+          <span class="day-name">${dayNames[dow]}</span>
+        </div>`);
+      }
+
+      // --- フェーズグルーピング ---
+      const phaseGroups = {};
+      tasks.forEach(task => {
+        const pKey = task.phase || '未分類';
+        if (!phaseGroups[pKey]) phaseGroups[pKey] = [];
+        phaseGroups[pKey].push(task);
+      });
+
+      // --- ラベル行 & タイムライン行 ---
+      const labelRows = [];
+      const timelineRows = [];
+
+      Object.entries(phaseGroups).forEach(([phaseName, phaseTasks]) => {
+        // フェーズヘッダー行
+        labelRows.push(`<div class="gantt-label-row gantt-phase-header">
+          <span class="label-phase-group">${phaseTranslate(phaseName)}</span>
+          <span class="label-phase-count">${phaseTasks.length}</span>
+        </div>`);
+        // フェーズ行用のタイムライン空行
+        let phCells = '';
+        for (let i = 0; i < totalDays; i++) {
+          const d = new Date(minDate); d.setDate(d.getDate() + i);
+          const dow = d.getDay();
+          const isWeekend = dow === 0 || dow === 6;
+          const isToday = d.getTime() === today.getTime();
+          phCells += `<div class="gantt-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" style="opacity:0.5;"></div>`;
+        }
+        timelineRows.push(`<div class="gantt-row gantt-row-phase">${phCells}</div>`);
+
+        phaseTasks.forEach(task => {
+          const tName = taskTranslate(task.task);
+          // ラベル行
+          labelRows.push(`<div class="gantt-label-row gantt-task-row" data-idx="${task.idx}" onclick="ganttLabelClick(${task.idx})">
+            <span class="label-status" data-s="${task.status}"></span>
+            <span class="label-task" title="${tName}">${tName}</span>
+            ${task.assignee ? `<span class="label-assignee">${task.assignee}</span>` : ''}
+          </div>`);
+
+          // タイムライン行
+          let barHtml = '';
+          const hasStart = !!task.startDate;
+          const hasEnd = !!task.endDate;
+
+          if (hasStart || hasEnd) {
+            const sDate = hasStart ? new Date(task.startDate) : (hasEnd ? new Date(task.endDate) : null);
+            const eDate = hasEnd ? new Date(task.endDate) : (hasStart ? new Date(task.startDate) : null);
+            if (sDate) sDate.setHours(0,0,0,0);
+            if (eDate) eDate.setHours(0,0,0,0);
+
+            const startOffset = Math.ceil((sDate - minDate) / (1000 * 60 * 60 * 24));
+            const endOffset = Math.ceil((eDate - minDate) / (1000 * 60 * 60 * 24));
+            const barLeft = startOffset * dayWidth;
+            const barDays = Math.max(endOffset - startOffset + 1, 1);
+            const barWidth = barDays * dayWidth - 4;
+
+            // 進捗率（done=100%, doing=50%, review=75%, back=25%, todo=0%）
+            const progressMap = { todo: 0, doing: 50, review: 75, back: 25, done: 100 };
+            const progress = progressMap[task.status] || 0;
+
+            const tooltipText = `${tName}\\n${lang === 'ja' ? '状態' : 'Status'}: ${statusLabelMap[task.status]}\\n${lang === 'ja' ? '期間' : 'Period'}: ${task.startDate || '?'} → ${task.endDate || '?'}${task.assignee ? `\\n${lang === 'ja' ? '担当' : 'Assignee'}: ${task.assignee}` : ''}`;
+
+            barHtml = `<div class="gantt-bar" data-status="${task.status}" data-idx="${task.idx}"
+              style="left:${barLeft}px;width:${barWidth}px;"
+              title="${tooltipText}"
+              onmousedown="ganttBarMouseDown(event, ${task.idx})"
+              onclick="ganttBarClick(event, ${task.idx})">
+              <div class="gantt-bar-progress" style="width:${progress}%"></div>
+              <span class="gantt-bar-label">${tName}</span>
+              <div class="gantt-bar-handle gantt-bar-handle-left" onmousedown="ganttResizeStart(event, ${task.idx}, 'left')"></div>
+              <div class="gantt-bar-handle gantt-bar-handle-right" onmousedown="ganttResizeStart(event, ${task.idx}, 'right')"></div>
+            </div>`;
+          }
+
+          let cellsHtml = '';
+          for (let i = 0; i < totalDays; i++) {
+            const d = new Date(minDate); d.setDate(d.getDate() + i);
+            const dow = d.getDay();
+            const isWeekend = dow === 0 || dow === 6;
+            const isToday = d.getTime() === today.getTime();
+            cellsHtml += `<div class="gantt-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" data-day-index="${i}" data-idx="${task.idx}" onclick="ganttCellClick(event, ${task.idx}, ${i})"></div>`;
+          }
+
+          timelineRows.push(`<div class="gantt-row gantt-row-task" data-idx="${task.idx}">${cellsHtml}${barHtml}</div>`);
+        });
+      });
+
+      // 今日の線
+      const todayOffset = Math.ceil((today - minDate) / (1000 * 60 * 60 * 24));
+      const todayLineLeft = todayOffset * dayWidth + dayWidth / 2;
+
+      // 月マーカー
+      const monthMarkersHtml = monthMarkers.map(m =>
+        `<div class="gantt-month-header" style="left:${m.left}px;">${m.label}</div>`
+      ).join('');
+
+      // ツールバー
+      const toolbarHtml = `<div class="gantt-toolbar">
+        <button class="btn btn-secondary gantt-tool-btn" onclick="ganttScrollToToday()" title="${lang === 'ja' ? '今日に移動' : 'Go to today'}">
+          📍 ${lang === 'ja' ? '今日' : 'Today'}
+        </button>
+        <div class="gantt-legend">
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:var(--gray-400)"></span>${lang === 'ja' ? '未着手' : 'Todo'}</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:#f59e0b"></span>${lang === 'ja' ? '進行中' : 'Doing'}</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:#3b82f6"></span>${lang === 'ja' ? 'レビュー' : 'Review'}</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:#ef4444"></span>${lang === 'ja' ? '差し戻し' : 'Back'}</span>
+          <span class="gantt-legend-item"><span class="gantt-legend-dot" style="background:#22c55e"></span>${lang === 'ja' ? '完了' : 'Done'}</span>
+        </div>
+      </div>`;
+
+      container.innerHTML = `
+        ${toolbarHtml}
+        <div class="gantt-container" id="ganttContainer">
+          <div class="gantt-labels">
+            <div class="gantt-label-header">
+              <span>${lang === 'ja' ? 'タスク' : 'Task'}</span>
+            </div>
+            ${labelRows.join('')}
+          </div>
+          <div class="gantt-timeline" id="ganttTimeline">
+            <div class="gantt-timeline-header" style="width:${totalDays * dayWidth}px;position:relative;">
+              ${monthMarkersHtml}
+              <div style="display:flex;margin-top:22px;">${dayHeaders.join('')}</div>
+            </div>
+            <div class="gantt-timeline-body" style="position:relative;width:${totalDays * dayWidth}px;">
+              ${timelineRows.join('')}
+              <div class="gantt-today-line" style="left:${todayLineLeft}px;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // レンダリング後、今日に自動スクロール
+      requestAnimationFrame(() => ganttScrollToToday());
+
+      // ガントチャートのホバー連動
+      setupGanttHoverSync();
+
+      // 保存用のminDate/dayWidth
+      container._ganttMinDate = minDate;
+      container._ganttDayWidth = dayWidth;
+    }
+
+    function ganttScrollToToday() {
+      const timeline = document.getElementById('ganttTimeline');
+      if (!timeline) return;
+      const todayLine = timeline.querySelector('.gantt-today-line');
+      if (!todayLine) return;
+      const left = parseInt(todayLine.style.left) - timeline.clientWidth / 3;
+      timeline.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+    }
+
+    function ganttLabelClick(idx) {
+      // ラベルクリック → テーブルの該当行にジャンプ
+      const btn = document.querySelector('.view-btn[data-view="table"]');
+      switchWorkflowView('table', btn);
+      const rows = document.querySelectorAll('.workflow-row');
+      if (rows[idx]) {
+        rows[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        rows[idx].style.transition = 'background 0.3s';
+        rows[idx].style.background = '#fef9c3';
+        setTimeout(() => { rows[idx].style.background = ''; }, 2000);
+      }
+    }
+
+    function ganttBarClick(e, idx) {
+      e.stopPropagation();
+      // ツールチップは title 属性で十分なので特別な処理不要
+    }
+
+    // --- ガントバーのドラッグ移動 ---
+    function ganttBarMouseDown(e, idx) {
+      if (e.target.classList.contains('gantt-bar-handle-left') || e.target.classList.contains('gantt-bar-handle-right')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const container = document.getElementById('ganttView');
+      const dayWidth = container._ganttDayWidth || 36;
+      const minDate = container._ganttMinDate;
+      const bar = e.currentTarget;
+      const startX = e.clientX;
+      const origLeft = parseInt(bar.style.left);
+
+      const rows = document.querySelectorAll('.workflow-row');
+      const row = rows[idx];
+      if (!row) return;
+      const startInput = row.querySelector('.workflow-start-date');
+      const endInput = row.querySelector('.workflow-end-date');
+      const origStart = startInput?.value || '';
+      const origEnd = endInput?.value || '';
+
+      bar.classList.add('gantt-bar-dragging');
+
+      function onMove(ev) {
+        const dx = ev.clientX - startX;
+        bar.style.left = (origLeft + dx) + 'px';
+      }
+      function onUp(ev) {
+        bar.classList.remove('gantt-bar-dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        const dx = ev.clientX - startX;
+        const dayShift = Math.round(dx / dayWidth);
+        if (dayShift === 0) return;
+        if (origStart) {
+          const d = new Date(origStart); d.setDate(d.getDate() + dayShift);
+          startInput.value = dateToStr(d);
+        }
+        if (origEnd) {
+          const d = new Date(origEnd); d.setDate(d.getDate() + dayShift);
+          endInput.value = dateToStr(d);
+        }
+        checkDeadlines();
+        renderGanttView();
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    // --- ガントバーのリサイズ ---
+    function ganttResizeStart(e, idx, side) {
+      e.preventDefault();
+      e.stopPropagation();
+      const container = document.getElementById('ganttView');
+      const dayWidth = container._ganttDayWidth || 36;
+      const bar = e.target.closest('.gantt-bar');
+      const startX = e.clientX;
+      const origLeft = parseInt(bar.style.left);
+      const origWidth = parseInt(bar.style.width);
+
+      const rows = document.querySelectorAll('.workflow-row');
+      const row = rows[idx];
+      if (!row) return;
+      const startInput = row.querySelector('.workflow-start-date');
+      const endInput = row.querySelector('.workflow-end-date');
+      const origStart = startInput?.value || '';
+      const origEnd = endInput?.value || '';
+
+      bar.classList.add('gantt-bar-dragging');
+
+      function onMove(ev) {
+        const dx = ev.clientX - startX;
+        if (side === 'right') {
+          bar.style.width = Math.max(dayWidth - 4, origWidth + dx) + 'px';
+        } else {
+          bar.style.left = (origLeft + dx) + 'px';
+          bar.style.width = Math.max(dayWidth - 4, origWidth - dx) + 'px';
+        }
+      }
+      function onUp(ev) {
+        bar.classList.remove('gantt-bar-dragging');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        const dx = ev.clientX - startX;
+        const dayShift = Math.round(dx / dayWidth);
+        if (dayShift === 0) return;
+        if (side === 'right') {
+          if (origEnd) {
+            const d = new Date(origEnd); d.setDate(d.getDate() + dayShift);
+            // 終了日が開始日より前にならないようにガード
+            if (origStart && d < new Date(origStart)) return renderGanttView();
+            endInput.value = dateToStr(d);
+          } else if (origStart) {
+            const d = new Date(origStart); d.setDate(d.getDate() + dayShift);
+            endInput.value = dateToStr(d);
+          }
+        } else {
+          if (origStart) {
+            const d = new Date(origStart); d.setDate(d.getDate() + dayShift);
+            // 開始日が終了日より後にならないようにガード
+            if (origEnd && d > new Date(origEnd)) return renderGanttView();
+            startInput.value = dateToStr(d);
+          } else if (origEnd) {
+            const d = new Date(origEnd); d.setDate(d.getDate() + dayShift);
+            startInput.value = dateToStr(d);
+          }
+        }
+        checkDeadlines();
+        renderGanttView();
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    // --- 空セルクリックで日付設定 ---
+    function ganttCellClick(e, idx, dayIndex) {
+      if (e.target.classList.contains('gantt-bar') || e.target.closest('.gantt-bar')) return;
+      const container = document.getElementById('ganttView');
+      const minDate = container._ganttMinDate;
+      const d = new Date(minDate); d.setDate(d.getDate() + dayIndex);
+
+      const rows = document.querySelectorAll('.workflow-row');
+      const row = rows[idx];
+      if (!row) return;
+      const startInput = row.querySelector('.workflow-start-date');
+      const endInput = row.querySelector('.workflow-end-date');
+
+      if (!startInput.value) {
+        startInput.value = dateToStr(d);
+      } else if (!endInput.value) {
+        const s = new Date(startInput.value);
+        if (d >= s) {
+          endInput.value = dateToStr(d);
+        } else {
+          endInput.value = startInput.value;
+          startInput.value = dateToStr(d);
+        }
+      } else {
+        // 両方設定済みの場合は開始日を変更
+        startInput.value = dateToStr(d);
+        if (new Date(d) > new Date(endInput.value)) {
+          endInput.value = dateToStr(d);
+        }
+      }
+      checkDeadlines();
+      renderGanttView();
+    }
+
+    function dateToStr(d) {
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    // --- ホバー連動 ---
+    function setupGanttHoverSync() {
+      const labelRows = document.querySelectorAll('.gantt-label-row.gantt-task-row');
+      const timelineRows = document.querySelectorAll('.gantt-row.gantt-row-task');
+
+      labelRows.forEach(lr => {
+        const idx = lr.dataset.idx;
+        const tr = document.querySelector(`.gantt-row.gantt-row-task[data-idx="${idx}"]`);
+        if (!tr) return;
+        lr.addEventListener('mouseenter', () => { lr.classList.add('gantt-hover'); tr.classList.add('gantt-hover'); });
+        lr.addEventListener('mouseleave', () => { lr.classList.remove('gantt-hover'); tr.classList.remove('gantt-hover'); });
+        tr.addEventListener('mouseenter', () => { lr.classList.add('gantt-hover'); tr.classList.add('gantt-hover'); });
+        tr.addEventListener('mouseleave', () => { lr.classList.remove('gantt-hover'); tr.classList.remove('gantt-hover'); });
+      });
+    }
+
+    // 進捗更新時にカンバン/ガントも更新
+    const _originalUpdateProgress = typeof updateProgress === 'function' ? updateProgress : null;
+
     // 初期化
     document.addEventListener('DOMContentLoaded', () => {
       // 保存された言語設定を読み込み
@@ -4712,8 +5884,8 @@ Result:"></textarea>
       });
 
       // 期限変更時に警告をチェック
-      document.querySelectorAll('.workflow-table input[type="date"]').forEach(input => {
-        input.addEventListener('change', checkDeadlines);
+      document.querySelectorAll('.workflow-start-date, .workflow-end-date').forEach(input => {
+        input.addEventListener('change', () => { checkDeadlines(); updateProgress(); });
       });
     });
   </script>
