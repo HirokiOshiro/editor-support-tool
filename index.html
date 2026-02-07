@@ -726,6 +726,41 @@
     .gantt-label-row .label-status[data-s="review"] { background: #3b82f6; }
     .gantt-label-row .label-status[data-s="back"]   { background: #ef4444; }
     .gantt-label-row .label-status[data-s="done"]   { background: #22c55e; }
+    /* ガントチャート内ステータスセレクト */
+    .gantt-status-select {
+      flex: 0 0 auto;
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0;
+      padding: 0;
+      outline: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .gantt-status-select:hover {
+      transform: scale(1.4);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+    .gantt-status-select:focus {
+      width: auto;
+      min-width: 72px;
+      height: auto;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      padding: 2px 4px;
+      appearance: auto;
+      -webkit-appearance: auto;
+      border: 1px solid var(--gray-300);
+    }
+    .gantt-status-select[data-s="todo"]   { background: var(--gray-300); }
+    .gantt-status-select[data-s="doing"]  { background: #f59e0b; }
+    .gantt-status-select[data-s="review"] { background: #3b82f6; }
+    .gantt-status-select[data-s="back"]   { background: #ef4444; }
+    .gantt-status-select[data-s="done"]   { background: #22c55e; }
     .gantt-timeline {
       flex: 1;
       overflow-x: auto;
@@ -5066,7 +5101,6 @@ Result:"></textarea>
 
     // タスクガイダンス表示
     function showTaskGuidance(taskName) {
-      console.log('[DEBUG showTaskGuidance] taskName:', JSON.stringify(taskName), 'found:', !!TASK_GUIDANCE[taskName]);
       const lang = document.body.getAttribute('data-lang') || 'ja';
 
       // 完全一致を試みた後、部分一致でフォールバック
@@ -5218,7 +5252,6 @@ Result:"></textarea>
 
     // タスク名セルにガイダンスボタンを追加
     function addGuidanceButtons() {
-      console.log('[DEBUG addGuidanceButtons] Starting...');
       document.querySelectorAll('.workflow-row').forEach((row, i) => {
         const taskCell = row.querySelector('td:nth-child(2)');
         if (!taskCell || taskCell.querySelector('.task-info-btn')) return;
@@ -5233,8 +5266,7 @@ Result:"></textarea>
           // 取得した日本語名を data 属性に保存（今後の参照用）
           if (taskName) taskCell.dataset.textJa = taskName;
         }
-        console.log('[DEBUG addGuidanceButtons] Row', i, 'taskName:', JSON.stringify(taskName), 'inGuidance:', !!TASK_GUIDANCE[taskName]);
-        if (!taskName || taskCell.querySelector('input')) return; // 入力欄がある場合はスキップ
+        if (!taskName || taskCell.querySelector('input')) return;
 
         const btn = document.createElement('button');
         btn.className = 'task-info-btn';
@@ -5464,18 +5496,15 @@ Result:"></textarea>
       });
       const today = new Date(); today.setHours(0,0,0,0);
 
+      let minDate, maxDate;
       if (allDates.length === 0) {
-        container.innerHTML = `<div class="gantt-no-dates">
-          <p>${lang === 'ja' ? '📅 ガントチャートを表示するには、タスクに開始日や完了予定日を設定してください。' : '📅 Set start/end dates on tasks to display the Gantt chart.'}</p>
-          <button class="btn btn-secondary" style="margin-top:12px;" onclick="switchWorkflowView('table', document.querySelector('.view-btn[data-view=\\'table\\']'))">
-            ${lang === 'ja' ? 'テーブルに戻る' : 'Back to Table'}
-          </button>
-        </div>`;
-        return;
+        // 日付未設定でも今日を中心にチャートを表示
+        minDate = new Date(today);
+        maxDate = new Date(today);
+      } else {
+        minDate = new Date(Math.min(...allDates, today));
+        maxDate = new Date(Math.max(...allDates, today));
       }
-
-      let minDate = new Date(Math.min(...allDates, today));
-      let maxDate = new Date(Math.max(...allDates, today));
       minDate.setDate(minDate.getDate() - 5);
       maxDate.setDate(maxDate.getDate() + 14);
       minDate.setHours(0,0,0,0);
@@ -5553,8 +5582,12 @@ Result:"></textarea>
         phaseTasks.forEach(task => {
           const tName = taskTranslate(task.task);
           // ラベル行
+          const statusOptions = ['todo','doing','review','back','done'];
+          const statusSelectHtml = `<select class="gantt-status-select" data-s="${task.status}" data-idx="${task.idx}" onchange="ganttStatusChange(this)" onclick="event.stopPropagation()">
+            ${statusOptions.map(s => `<option value="${s}" ${s === task.status ? 'selected' : ''}>${statusLabelMap[s]}</option>`).join('')}
+          </select>`;
           labelRows.push(`<div class="gantt-label-row gantt-task-row" data-idx="${task.idx}" onclick="ganttLabelClick(${task.idx})">
-            <span class="label-status" data-s="${task.status}"></span>
+            ${statusSelectHtml}
             <span class="label-task" title="${tName}">${tName}</span>
             ${task.assignee ? `<span class="label-assignee">${task.assignee}</span>` : ''}
           </div>`);
@@ -5687,7 +5720,36 @@ Result:"></textarea>
 
     function ganttBarClick(e, idx) {
       e.stopPropagation();
-      // ツールチップは title 属性で十分なので特別な処理不要
+    }
+
+    // --- ガントチャート上でステータス変更 ---
+    function ganttStatusChange(selectEl) {
+      const idx = parseInt(selectEl.dataset.idx);
+      const newStatus = selectEl.value;
+      const rows = document.querySelectorAll('.workflow-row');
+      const row = rows[idx];
+      if (!row) return;
+
+      const tableSelect = row.querySelector('.workflow-status');
+      if (tableSelect) {
+        const oldStatus = tableSelect.value;
+        tableSelect.value = newStatus;
+
+        // 変更履歴を記録
+        const taskCell = row.querySelector('td:nth-child(2)');
+        const taskName = taskCell?.textContent?.replace('?', '').trim() || '';
+        logChange(taskName, 'status', oldStatus, newStatus);
+        tableSelect.dataset.prevStatus = newStatus;
+
+        if (newStatus === 'back') {
+          showBackReasonModal(row);
+        }
+
+        updateProgress();
+        applyWorkflowFilters();
+      }
+      // ガントチャートを再描画
+      renderGanttView();
     }
 
     // --- ガントバーのドラッグ移動 ---
